@@ -238,14 +238,14 @@
 				<view class="shop-content">
 					<view class="content_item mb20">
 						<text class="title f30">{{ item.name }}</text>
-						<text class="heat">人气 {{item.heat}}</text>
+						<text class="heat">人气 {{ item.heat }}</text>
 					</view>
 					<view class="content_item mb10">
-						<text class="payPeo f22">{{item.payNum}}人付款</text>
+						<text class="payPeo f22">{{ item.payNum }}人付款</text>
 						<text class="sales f22">累计出售{{ item.sales }}件</text>
 					</view>
 					<view class="content_item mb5 flexjb">
-						<text class="createTime f22"> {{item.createTime}}创立</text>
+						<text class="createTime f22">{{ item.createTime }}创立</text>
 						<view class="enter f22">
 							<text class="f22 c9">进入</text>
 							<text class="f22 c6">村超市</text>
@@ -291,13 +291,6 @@ export default {
 			this.titleNViewBackground = carouselList[0].background;
 			this.swiperLength = carouselList.length;
 			this.carouselList = carouselList;
-
-			let goodsList = await this.$api.json('goodsList');
-			let shopList = await this.$api.json('shopList');
-
-			this.goodsList = goodsList || [];
-
-			// this.shopList = shopList || [];
 		},
 		//轮播图切换修改背景色
 		swiperChange(e) {
