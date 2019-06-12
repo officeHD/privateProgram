@@ -103,19 +103,19 @@
 					},
 					{
 						state: 2,
-						text: '待收货',
+						text: '待发货',
 						loadingType: 'more',
 						orderList: []
 					},
 					{
 						state: 3,
-						text: '待评价',
+						text: '待收货',
 						loadingType: 'more',
 						orderList: []
 					},
 					{
 						state: 4,
-						text: '售后',
+						text: '已完成',
 						loadingType: 'more',
 						orderList: []
 					}

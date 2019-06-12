@@ -138,7 +138,25 @@
 			"style": {
 				"navigationBarTitleText": "收货地址"
 			}
-		}, {
+		}, 
+		 {
+			"path": "pages/coupon/coupon",
+			"style": {
+				"navigationBarTitleText": "优惠券"
+			}
+		}, 
+		 {
+			"path": "pages/vipcard/vipcard",
+			"style": {
+				"navigationBarTitleText": "会员卡"
+			}
+		}, 
+		
+		
+		
+		
+		
+		{
 			"path": "pages/address/addressManage",
 			"style": {
 				"navigationBarTitleText": ""

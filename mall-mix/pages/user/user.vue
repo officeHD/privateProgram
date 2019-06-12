@@ -102,16 +102,16 @@
 					<text class="yticon icon-daifukuan"></text>
 					<text>收藏夹</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=0')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/coupon/coupon')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-shouye"></text>
 					<text>优惠券</text>
 				</view>
 				
-				<view class="order-item"  @eventClick="navTo('/pages/address/address')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item"  @click="navTo('/pages/address/address')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>收货地址</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=2')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/vipcard/vipcard')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>会员卡</text>
 				</view>
