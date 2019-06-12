@@ -238,15 +238,19 @@
 				<view class="shop-content">
 					<view class="content_item mb20">
 						<text class="title f30">{{ item.name }}</text>
-						<text class="heat">人气400</text>
+						<text class="heat">人气 {{item.heat}}</text>
 					</view>
 					<view class="content_item mb10">
-						<text class="payPeo f22">100人付款</text>
+						<text class="payPeo f22">{{item.payNum}}人付款</text>
 						<text class="sales f22">累计出售{{ item.sales }}件</text>
 					</view>
 					<view class="content_item mb5 flexjb">
-						<text class="createTime f22">2018年创立</text>
-						<view class="enter f22"><text class="f22 c9">进入</text><text class="f22 c6">村超市</text><text class="f22 ml10 yticon icon-you"></text></view>
+						<text class="createTime f22"> {{item.createTime}}创立</text>
+						<view class="enter f22">
+							<text class="f22 c9">进入</text>
+							<text class="f22 c6">村超市</text>
+							<text class="f22 ml10 yticon icon-you"></text>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -276,6 +280,13 @@ export default {
 		 * 分次请求未作整合
 		 */
 		async loadData() {
+			const res = await this.$req.ajax({
+				path: 'getShopList',
+				title: '正在加载'
+			});
+			if (res.statusCode == 200 && res.data.result == 1) {
+				this.shopList = res.data.list;
+			}
 			let carouselList = await this.$api.json('carouselList');
 			this.titleNViewBackground = carouselList[0].background;
 			this.swiperLength = carouselList.length;
@@ -286,7 +297,7 @@ export default {
 
 			this.goodsList = goodsList || [];
 
-			this.shopList = shopList || [];
+			// this.shopList = shopList || [];
 		},
 		//轮播图切换修改背景色
 		swiperChange(e) {
@@ -819,7 +830,6 @@ page {
 }
 .modeTit {
 	padding: 20upx 30upx;
-	 
 }
 .shop-section {
 	display: flex;
@@ -857,21 +867,21 @@ page {
 		padding-left: 20upx;
 		font-size: $font-sm;
 		justify-content: space-between;
-		.content_item{
+		.content_item {
 			display: flex;
-			 align-items: center;
+			align-items: center;
 			padding-right: 20upx;
-			.payPeo{
-				color: #F27A3D;
+			.payPeo {
+				color: #f27a3d;
 			}
-			.sales{
+			.sales {
 				margin-left: 20upx;
 				color: #999999;
 			}
-			.createTime{
+			.createTime {
 				color: #666666;
 			}
-			.enter{
+			.enter {
 				color: #999999;
 			}
 		}
@@ -888,7 +898,6 @@ page {
 
 	.title {
 		color: #1e1e1e;
-	 
 	}
 
 	.price {
