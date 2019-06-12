@@ -107,7 +107,7 @@
 					<text>优惠券</text>
 				</view>
 				
-				<view class="order-item" @click="navTo('/pages/order/order?state=2')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item"  @eventClick="navTo('/pages/address/address')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>收货地址</text>
 				</view>
@@ -121,7 +121,7 @@
 				</view>
 			</view>
 			<!-- 浏览历史 -->
-			<view class="history-section icon">
+			<!-- <view class="history-section icon">
 				<view class="sec-header">
 					<text class="yticon icon-lishijilu"></text>
 					<text>浏览历史</text>
@@ -146,7 +146,7 @@
 				<list-cell icon="icon-pinglun-copy" iconColor="#ee883b" title="晒单" tips="晒单抢红包"></list-cell>
 				<list-cell icon="icon-shoucang_xuanzhongzhuangtai" iconColor="#54b4ef" title="我的收藏"></list-cell>
 				<list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" border="" @eventClick="navTo('/pages/set/set')"></list-cell>
-			</view>
+			</view> -->
 		</view>
 	</view>
 </template>
@@ -408,6 +408,7 @@
 
 	.container {
 		background: #f5f5f5;
+		height: 100%;
 	}
 
 	.cover-container {
