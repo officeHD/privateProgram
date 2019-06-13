@@ -344,7 +344,7 @@
 
 	.tabr {
 		background-color: #fff;
-		width: 94%;
+		width: 100%;
 		height: 95upx;
 		padding: 0 3%;
 		border-bottom: solid 1upx #dedede;
