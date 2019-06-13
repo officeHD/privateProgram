@@ -63,7 +63,7 @@
 			<!-- 订单 -->
 			<view class="tabTitle">
 				<text class="f28">全部订单</text>
-				<view>
+				<view @click="navTo('/pages/order/order?state=0')">
 					<text class="f28 c9">查看全部订单</text>
 					<text class="f28 ml10 yticon icon-you c6"></text>
 				</view>
@@ -73,16 +73,16 @@
 					<text class="yticon icon-daifukuan"></text>
 					<text>待付款</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=0')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/order/order?state=1')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-shouye"></text>
 					<text>待发货</text>
 				</view>
-				
+
 				<view class="order-item" @click="navTo('/pages/order/order?state=2')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>待收货</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=2')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/order/order?state=3')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>已完成</text>
 				</view>
@@ -94,7 +94,7 @@
 			<view class="tabTitle">
 				<text class="f28">常用工具</text>
 				<view>
-					 
+
 				</view>
 			</view>
 			<view class="order-section">
@@ -106,8 +106,8 @@
 					<text class="yticon icon-shouye"></text>
 					<text>优惠券</text>
 				</view>
-				
-				<view class="order-item"  @click="navTo('/pages/address/address')" hover-class="common-hover" :hover-stay-time="50">
+
+				<view class="order-item" @click="navTo('/pages/address/address')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>收货地址</text>
 				</view>
