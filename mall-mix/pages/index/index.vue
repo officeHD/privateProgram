@@ -234,15 +234,15 @@
 		<view class="modeTit"><text class="tit f28 c3">村口</text></view>
 		<view class="shop-section">
 			<view v-for="(item, index) in shopList" :key="index" class="shop-item" @click="navToDetailPage(item)">
-				<view class="image-wrapper"><image :src="item.image" mode="aspectFill"></image></view>
+				<view class="image-wrapper"><image :src="item.thumb_url" mode="aspectFill"></image></view>
 				<view class="shop-content">
 					<view class="content_item mb20">
-						<text class="title f30">{{ item.name }}</text>
+						<text class="title f30">{{ item.title }}</text>
 						<text class="heat">人气 {{ item.heat }}</text>
 					</view>
 					<view class="content_item mb10">
-						<text class="payPeo f22">{{ item.payNum }}人付款</text>
-						<text class="sales f22">累计出售{{ item.sales }}件</text>
+						<text class="payPeo f22">{{ item.stock }}人付款</text>
+						<text class="sales f22">累计出售{{ item.sell }}件</text>
 					</view>
 					<view class="content_item mb5 flexjb">
 						<text class="createTime f22">{{ item.createTime }}创立</text>
@@ -281,11 +281,13 @@ export default {
 		 */
 		async loadData() {
 			const res = await this.$req.ajax({
-				path: 'getShopList',
-				title: '正在加载'
+				path: 'goods_info/get_goods_list',
+				title: '正在加载',
+				data:{user_code:"ff8080816a9b6057016aa05476660000"}
 			});
-			if (res.statusCode == 200 && res.data.result == 1) {
-				this.shopList = res.data.list;
+			console.log(res.data.data.list)
+			if (res.statusCode == 200 && res.data.code == 200) {
+				this.shopList = res.data.data.list;
 			}
 			let carouselList = await this.$api.json('carouselList');
 			this.titleNViewBackground = carouselList[0].background;

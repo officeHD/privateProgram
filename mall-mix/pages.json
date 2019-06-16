@@ -192,7 +192,13 @@
 				"navigationBarTitleText": "商品列表"
 			}
 		}
-	],
+	    ,{
+            "path" : "pages/order/list",
+            "style" : {
+				"navigationBarTitleText": "账单查询"
+			}
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

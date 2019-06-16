@@ -31,7 +31,8 @@
 					<text class="num f24 c6">0</text>
 				</view>
 			</view>
-			<view class="searchList">
+		 
+			<view class="searchList"  @click="navTo('/pages/order/list')">
 				<text class="f24">账单查询</text>
 			</view>
 
