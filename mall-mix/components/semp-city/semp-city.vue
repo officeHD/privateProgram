@@ -26,6 +26,7 @@
 <script>
 	import cityData from '../../common/city.data.js';
 	export default {
+		name: 'sempCity',
 		data() {
 			return {
 				other: {

@@ -6,6 +6,7 @@
 
 <script>
 	export default {
+		
 		props: {
 			src: {
 				type: String,

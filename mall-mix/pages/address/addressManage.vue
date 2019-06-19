@@ -16,7 +16,7 @@
 			<text class="yticon icon-shouhuodizhi"></text>
 		</view>
 		<uni-popup :show="opentype === 'bottoms'" position="bottom" mode="fixed" msg="选择收货地址" @hidePopup="togglePopup('')">
-		 
+
 			<semp-city @confirm="onCityClick" platform="jd"></semp-city>
 		</uni-popup>
 		<view class="row b-b">
@@ -28,14 +28,14 @@
 			<text class="tit">设为默认</text>
 			<switch :checked="addressData.defaule" color="#fa436a" @change="switchChange" />
 		</view>
-	 
+
 		<button class="add-btn" @click="confirm">提交</button>
 	</view>
 </template>
 
 <script>
 	import sempCity from "@/components/semp-city/semp-city.vue"
-	import {uniPopup} from "@/components/uni-popup/uni-popup.vue"
+	import uniPopup from "@/components/uni-popup/uni-popup.vue"
 	export default {
 		components: {
 			sempCity,
@@ -43,9 +43,9 @@
 		},
 		data() {
 			return {
-				opentype:"",
+				opentype: "",
 				addressData: {
-					 
+
 					name: '',
 					mobile: '',
 					addressName: '在地图选择',
@@ -76,6 +76,7 @@
 				this.cityName = e.city.label;
 				this.countyName = e.county.label;
 				this.townName = e.town.label;
+				this.addressData.addressName = e.province.label + " " + e.city.label + " " + e.county.label + " " + e.town.label
 				this.togglePopup("")
 			},
 			togglePopup(type) {
