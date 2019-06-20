@@ -198,6 +198,10 @@
 				"navigationBarTitleText": "账单查询"
 			}
         }
+        ,{
+            "path" : "pages/wuliu/wuliu",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
