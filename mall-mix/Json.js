@@ -351,7 +351,7 @@ const orderList = [{
 	},
 	{
 		time: '2019-04-06 11:37',
-		state: 9,
+		state: 2,
 		goodsList: [{
 			title: '古黛妃 短袖t恤女 春夏装2019新款韩版宽松',
 			price: 179.5,
@@ -398,7 +398,7 @@ const orderList = [{
 	},
 	{
 		time: '2019-04-06 11:37',
-		state: 1,
+		state: 3,
 		goodsList: [{
 				image: 'https://img.alicdn.com/imgextra/i4/3470687433/O1CN0124mMQOSERr18L1h_!!3470687433.jpg_430x430q90.jpg',
 			},

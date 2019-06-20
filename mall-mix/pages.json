@@ -138,24 +138,37 @@
 			"style": {
 				"navigationBarTitleText": "收货地址"
 			}
-		}, 
-		 {
+		}, {
+
+			"path": "pages/order/orderDetail",
+			"style": {
+				"navigationBarTitleText": "订单详情",
+				// #ifdef MP
+				"navigationStyle": "custom",
+				// #endif
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": {
+						"type": "transparent",
+						"titleText":"订单详情",
+						"titleColor":"#fff"
+						 
+					}
+				}
+			} 
+		},
+		{
 			"path": "pages/coupon/coupon",
 			"style": {
 				"navigationBarTitleText": "优惠券"
 			}
-		}, 
-		 {
+		},
+		{
 			"path": "pages/vipcard/vipcard",
 			"style": {
 				"navigationBarTitleText": "会员卡"
 			}
-		}, 
-		
-		
-		
-		
-		
+		},
 		{
 			"path": "pages/address/addressManage",
 			"style": {
@@ -191,18 +204,16 @@
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "商品列表"
 			}
-		}
-	    ,{
-            "path" : "pages/order/list",
-            "style" : {
+		}, {
+			"path": "pages/order/list",
+			"style": {
 				"navigationBarTitleText": "账单查询"
 			}
-        }
-        ,{
-            "path" : "pages/wuliu/wuliu",
-            "style" : {}
-        }
-    ],
+		}, {
+			"path": "pages/wuliu/wuliu",
+			"style": {}
+		}
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

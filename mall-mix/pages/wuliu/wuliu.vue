@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ali from '../../components/aliStep.vue';
+import ali from '../../components/WuLiu-step.vue';
 export default {
 	components: {
 		ali

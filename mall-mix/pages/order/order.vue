@@ -25,6 +25,7 @@
 					<view 
 						v-for="(item,index) in tabItem.orderList" :key="index"
 						class="order-item"
+						@click="navToDetail(item)"
 					>
 						<view class="i-top b-b">
 							<text class="time">{{item.time}}</text>
@@ -141,6 +142,13 @@
 		},
 		 
 		methods: {
+			//
+			navToDetail(item){
+				let id = item.state;
+				uni.navigateTo({
+					url: `/pages/order/orderDetail?id=${id}`
+				});
+			},
 			//获取订单列表
 			loadData(source){
 				//这里是将订单挂载到tab列表下
