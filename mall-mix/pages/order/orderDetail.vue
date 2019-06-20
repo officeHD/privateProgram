@@ -1,9 +1,16 @@
 <template>
 	<view>
 		<view class="user-section">
-			<text class="top-title">订单代付款</text>
-			<text class="top-con">剩余24小时32分钟自动关闭</text>
+			<text class="top-title" v-if="maskState == 1">订单待付款</text>
+			<text class="top-title" v-if="maskState == 2">已付款</text>
+			<text class="top-title" v-if="maskState == 3">订单待收货</text>
+			<text class="top-title" v-if="maskState == 4">订单已完成</text>
+			<text class="top-con" v-if="maskState == 1">剩余24小时32分钟自动关闭</text>
+			<text class="top-con" v-if="maskState == 2">等待商家发货</text>
+			<text class="top-con" v-if="maskState == 3">等待收货</text>
+			<text class="top-con" v-if="maskState == 4">去评价</text>
 		</view>
+
 		<!-- 地址 -->
 		<view class="address-section">
 			<view class="order-content">
@@ -70,14 +77,14 @@
 		<view class="order-mes">
 			<text class="order-tit">订单信息</text>
 			<view class="order-ite">
-				 <text class="ite-tit">订单编号</text>
-				 <text>订单编号</text>
-				 <text class="copy">复制</text>
+				<text class="ite-tit">订单编号</text>
+				<text>订单编号</text>
+				<text class="copy">复制</text>
 			</view>
-			
+
 			<view class="order-ite">
-				 <text class="ite-tit">订单编号</text>
-				 <text>订单编号</text> 
+				<text class="ite-tit">订单编号</text>
+				<text>订单编号</text>
 			</view>
 		</view>
 		<!-- 底部 -->
@@ -122,25 +129,13 @@
 		},
 		onLoad(option) {
 			//商品数据
-			//let data = JSON.parse(option.data);
-			//console.log(data);
+			let id = JSON.parse(option.id);
+			this.maskState=id;
 		},
 		methods: {
-			//显示优惠券面板
-			toggleMask(type) {
-				let timer = type === 'show' ? 10 : 300;
-				let state = type === 'show' ? 1 : 0;
-				this.maskState = 2;
-				setTimeout(() => {
-					this.maskState = state;
-				}, timer)
-			},
-			numberChange(data) {
-				this.number = data.number;
-			},
-			changePayType(type) {
-				this.payType = type;
-			},
+		 
+			 
+			 
 			submit() {
 				uni.redirectTo({
 					url: '/pages/money/pay'
@@ -509,32 +504,35 @@
 		}
 	}
 
-	 .order-mes{
-		 margin: 20upx 0;
-		 background-color: #fff;
-		 padding: 20upx 30upx;
-		 .order-tit{
-			 font-size: 26upx;
-			 color: #494949;
-		 }
-		 .order-ite{
-			 margin: 15upx 0 10upx;
-			 position: relative;
-			 font-size: 20upx;
-			
-			 color: #333333;
-			 .copy{
-				 position: absolute;
-				 right: 0;
-				 background-color: #E6EAED;
-				 color: #2677B6;
-				 padding: 10upx 20upx;
-			 }
-		 }
-		 .ite-tit{
-			 margin-right: 40upx;
-			  color: #999;
-		 }
-	 }
-	 
+	.order-mes {
+		margin: 20upx 0;
+		background-color: #fff;
+		padding: 20upx 30upx;
+
+		.order-tit {
+			font-size: 26upx;
+			color: #494949;
+		}
+
+		.order-ite {
+			margin: 15upx 0 10upx;
+			position: relative;
+			font-size: 20upx;
+
+			color: #333333;
+
+			.copy {
+				position: absolute;
+				right: 0;
+				background-color: #E6EAED;
+				color: #2677B6;
+				padding: 10upx 20upx;
+			}
+		}
+
+		.ite-tit {
+			margin-right: 40upx;
+			color: #999;
+		}
+	}
 </style>
