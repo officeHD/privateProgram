@@ -18,7 +18,7 @@
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}">
 						<view class="image-wrapper">
-							<image :src="item.image" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
+							<image :src="item.thumb" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
 							 @error="onImageError('cartList', index)"></image>
 							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.checked}" @click="check('item', index)"></view>
 						</view>
@@ -91,22 +91,23 @@
 			//请求数据
 			async loadData() {
 
-				// let res = await this.$req.ajax({
-				// 	path: 'order_info/get_order_list',
-				// 	title: '正在加载',
-				// 	data:{user_code:"ff8080816a9b6057016aa05476660000",type:"1",page:"1"}
-				// });
-				// if (res.statusCode == 200 && res.data.code == 200) {
-				// 	this.cartList = res.data.data.list;
-				// }
-				console.log(this.cartList)
-				let list = await this.$api.json('cartList');
-				let cartList = list.map(item => {
-					item.checked = true;
-					return item;
+				let res = await this.$req.ajax({
+					path: 'order_info/get_order_list',
+					title: '正在加载',
+					data:{user_code:"ff8080816a9b6057016aa05476660000",type:"1",page:"1"}
 				});
-				this.cartList = cartList;
-				this.calcTotal(); //计算总价
+				if (res.statusCode == 200 && res.data.code == 200) {
+					this.cartList = res.data.data.list;
+					// console.log(res.data.data.list)
+				}
+				// console.log(this.cartList)
+				// let list = await this.$api.json('cartList');
+				// let cartList = list.map(item => {
+				// 	item.checked = true;
+				// 	return item;
+				// });
+				// this.cartList = cartList;
+				// this.calcTotal(); //计算总价
 			},
 			//监听image加载完成
 			onImageLoad(key, index) {

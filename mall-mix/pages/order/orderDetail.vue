@@ -13,6 +13,12 @@
 
 		<!-- 地址 -->
 		<view class="address-section">
+			<view class="order-content bb" v-if="maskState == 2">
+				 <text class="location">{{addressData.address}} {{addressData.area}}</text>
+					 
+			 
+				<text class="mobile">2019-3-14 5:20</text>
+			</view>
 			<view class="order-content">
 				<view class="top">
 					<text class="name">{{addressData.name}}</text>
@@ -175,17 +181,29 @@
 
 	.address-section {
 		margin: 20upx 0;
-		padding: 20upx 30upx;
+		padding:10upx 0 10upx 30upx;
+		min-height: 130upx;
 		background: #fff;
 		position: relative;
-
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 		.order-content {
 			display: flex;
 			align-items: flex-start;
 			flex-direction: column;
 			font-size: 28upx;
 			color: $font-color-dark;
+			padding: 5px 0;
+			&.bb{
+				border-bottom: 1px solid #e6e6e6;
+			}
 
+		}
+		.location{
+			font-size: 28upx;
+			color: #298BD9;
+			margin-bottom: 10upx;
 		}
 
 

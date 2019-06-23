@@ -4,39 +4,12 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				// #ifdef MP 
 				"navigationBarTitleText": "首页",
-				//"navigationStyle": "custom",
-				// #endif 
-				"app-plus": {
-					"titleNView": {
-						"type": "transparent",
-						"searchInput": {
-							"backgroundColor": "rgba(231, 231, 231,.7)",
-							"borderRadius": "16px",
-							"placeholder": "请输入地址 如：大钟寺",
-							"disabled": true,
-							"placeholderColor": "#606266"
-						},
-						"buttons": [{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue60d",
-								"fontSize": "26",
-								"color": "#303133",
-								"float": "left",
-								"background": "rgba(0,0,0,0)"
-							},
-							{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue744",
-								"fontSize": "27",
-								"color": "#303133",
-								"background": "rgba(0,0,0,0)",
-								"redDot": true
-							}
-						]
-					}
-				}
+				"navigationBarTextStyle": "black",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 50
+
+
 			}
 		},
 		{
@@ -57,7 +30,7 @@
 		},
 
 		{
-			"path": "pages/userinfo/userinfo",
+			"path": "pages/user/userinfo/userinfo",
 			"style": {
 				"navigationBarTitleText": "修改资料"
 			}
@@ -80,30 +53,9 @@
 			"path": "pages/user/user",
 			"style": {
 				"navigationBarTitleText": "我的",
-				// #ifdef MP
-				"navigationStyle": "custom",
-				// #endif
 				"app-plus": {
-					"bounce": "none",
 					"titleNView": {
-						"type": "transparent",
-						"buttons": [{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue60f",
-								"fontSize": "24",
-								"color": "#303133",
-								"width": "46px",
-								"background": "rgba(0,0,0,0)"
-							},
-							{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue744",
-								"fontSize": "28",
-								"color": "#303133",
-								"background": "rgba(0,0,0,0)",
-								"redDot": true
-							}
-						]
+						"type": "transparent"
 					}
 				}
 			}
@@ -150,12 +102,12 @@
 					"bounce": "none",
 					"titleNView": {
 						"type": "transparent",
-						"titleText":"订单详情",
-						"titleColor":"#fff"
-						 
+						"titleText": "订单详情",
+						"titleColor": "#fff"
+
 					}
 				}
-			} 
+			}
 		},
 		{
 			"path": "pages/coupon/coupon",
@@ -212,6 +164,26 @@
 		}, {
 			"path": "pages/wuliu/wuliu",
 			"style": {}
+		}, {
+			"path": "pages/user/keep/keep",
+			"style": {
+				"navigationBarTitleText": "推荐"
+			}
+		}, {
+			"path": "pages/user/collection/collection",
+			"style": {
+				"navigationBarTitleText": "收藏"
+			}
+		}, {
+			"path": "pages/evaluate/evaluate",
+			"style": {
+				"navigationBarTitleText": "评价详情"
+			}
+		}, {
+			"path": "pages/evaluate/add",
+			"style": {
+				"navigationBarTitleText": "评价"
+			}
 		}
 	],
 	"globalStyle": {

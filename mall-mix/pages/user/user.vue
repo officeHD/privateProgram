@@ -5,9 +5,9 @@
 
 
 		</view>
-		<view class="vip-card-box">
+		<view class="vip-card-box"   >
 			<!-- <image class="card-bg" src="/static/vip-card-bg.png" mode=""></image> -->
-			<view class="user-info-box">
+			<view class="user-info-box"  @click="navTo('/pages/user/userinfo/userinfo?state=1')">
 				<view class="user-info-box-l">
 					<view class="portrait-box">
 						<image class="portrait" :src="userInfo.portrait || '/static/missing-face.png'"></image>
@@ -99,7 +99,7 @@
 				</view>
 			</view>
 			<view class="order-section">
-				<view class="order-item" @click="navTo('/pages/order/order?state=1')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/user/collection/collection?state=1')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-daifukuan"></text>
 					<text>收藏夹</text>
 				</view>
@@ -116,7 +116,7 @@
 					<text class="yticon icon-yishouhuo"></text>
 					<text>会员卡</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=4')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/user/keep/keep?state=4')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-shouhoutuikuan"></text>
 					<text>我的推荐</text>
 				</view>
@@ -277,7 +277,7 @@
 	}
 
 	.user-section {
-		height: 320upx;
+		height: 280upx;
 		padding: 100upx 30upx 0;
 		position: relative;
 		background: linear-gradient(to right, #6ab0e6, #4b9fe0);

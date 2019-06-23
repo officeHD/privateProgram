@@ -20,26 +20,20 @@
 					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
 						<view class="left">
 							<view class="title">
-								{{row.title}}
+								<text v-if="row.discount_type==1">{{row.discount}}折</text>
+								<text v-else>￥{{row.reduce}}</text> 
+							</view> 
+							<view class="criteria">
+								满{{row.min_price}}元使用 <text>（{{row.discount_type|couponType}} ）</text>
 							</view>
 							<view class="term">
-								{{row.termStart}} ~ {{row.termEnd}}
+								{{row.start_time}} ~ {{row.end_time}}
 							</view>
 							<view class="gap-top"></view>
 							<view class="gap-bottom"></view>
 						</view>
 						<view class="right">
-							<view class="ticket">
-								<view class="num">
-									{{row.ticket}}
-								</view>
-								<view class="unit">
-									元
-								</view>
-							</view>
-							<view class="criteria">
-								{{row.criteria}}
-							</view>
+
 							<view class="use">
 								去使用
 							</view>
@@ -177,6 +171,18 @@
 		onPageScroll(e) {
 
 		},
+		filters: {
+
+			couponType: function(value) {
+				let type = "折扣券";
+				if (value === "2") {
+					type = "立减券";
+				}
+				return type
+
+			}
+
+		},
 		//下拉刷新，需要自己在page.json文件中配置开启页面下拉刷新 "enablePullDownRefresh": true
 		onPullDownRefresh() {
 			setTimeout(function() {
@@ -195,8 +201,27 @@
 				}
 			}, 1);
 			// #endif
+
+			this.loadData();
+
 		},
 		methods: {
+			async loadData() {
+				let res = await this.$req.ajax({
+					path: 'users_coupon_info/get_coupon_list',
+					title: '正在加载',
+					data: {
+						user_code: "ff8080816a9b6057016aa05476660000",
+						type: "",
+						page: "1",
+						page_num: "10"
+					}
+				});
+				if (res.statusCode == 200 && res.data.code == 200) {
+					this.couponValidList = res.data.data.list;
+					// console.log(res.data.data.list)
+				}
+			},
 			switchType(type) {
 				if (this.typeClass == type) {
 					return;
@@ -434,7 +459,7 @@
 
 		.row {
 			width: 92%;
-			height: 24vw;
+			height: 150upx;
 			margin: 20upx auto 10upx auto;
 			border-radius: 8upx;
 			// box-shadow: 0upx 0 10upx rgba(0,0,0,0.1);
@@ -500,12 +525,22 @@
 
 				.left {
 					width: 100%;
+					background: #E0F0F3;
+					border-right: 2upx dashed #999999;
 
 					.title {
-						padding-top: 3vw;
+						padding-top: 10upx;
 						width: 90%;
 						margin: 0 5%;
-						font-size: 36upx;
+						font-size: 40upx;
+						color: #E31010;
+					}
+
+					.criteria {
+						width: 90%;
+						margin: 0 5%;
+						font-size: 23upx;
+						color: #666666;
 					}
 
 					.term {
@@ -546,9 +581,9 @@
 
 				.right {
 					flex-shrink: 0;
-					width: 28%;
+					width: 160upx;
 					color: #fff;
-					background: linear-gradient(to right, #ec625c, #ee827f);
+					background: #E0F0F3;
 
 					&.invalid {
 						background: linear-gradient(to right, #aaa, #999);
@@ -559,6 +594,7 @@
 					}
 
 					justify-content: center;
+					align-items: center;
 
 					.ticket,
 					.criteria {
@@ -588,14 +624,15 @@
 					}
 
 					.use {
-						width: 50%;
-						height: 40upx;
+						width: 112upx;
+						height: 54upx;
 						justify-content: center;
 						align-items: center;
-						font-size: 24upx;
-						background-color: #fff;
-						color: #ee827f;
-						border-radius: 40upx;
+						font-size: 26upx;
+						background: linear-gradient(to right, #66ADE5, #1589E3);
+
+						color: #fff;
+						border-radius: 4upx;
 						padding: 0 10upx;
 					}
 				}

@@ -11,37 +11,22 @@
 			<view class="sub-list valid" :class="subState">
 				<view class="tis" v-if="couponValidList.length==0">没有数据~</view>
 				<view class="row" v-for="(row,index) in couponValidList" :key="index">
-					<!-- 删除按钮 -->
-					<view class="menu" @tap.stop="deleteCoupon(row.id,couponValidList)">
-						<view class="icon shanchu"></view>
-					</view>
+
 					<!-- content -->
-					<view class="carrier" :class="[typeClass=='valid'?theIndex==index?'open':oldIndex==index?'close':'':'']"
-					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
-						<view class="left">
-							<view class="title">
-								{{row.title}}
+					<view class="carrier" :class="[typeClass=='valid'?theIndex==index?'open':oldIndex==index?'close':'':'']">
+						<view class="content">
+							<text class="exit" @tap="delVipCard()">退出会员</text>
+							<view class="vipname">
+								VIP
 							</view>
-							<view class="term">
-								{{row.termStart}} ~ {{row.termEnd}}
+							<view class="descript">会员专享
+								<view class="beforeline"></view>
+								<view class="afterline"></view>
 							</view>
-							<view class="gap-top"></view>
-							<view class="gap-bottom"></view>
-						</view>
-						<view class="right">
-							<view class="ticket">
-								<view class="num">
-									{{row.ticket}}
-								</view>
-								<view class="unit">
-									元
-								</view>
-							</view>
-							<view class="criteria">
-								{{row.criteria}}
-							</view>
-							<view class="use">
-								去使用
+							<view class="info">
+								<image class="img" :src="row.avatar_web" mode="aspectFill"></image>
+								<text class="nickname_web">{{row.nickname_web}}</text>
+								<text class="level">{{row.type}}</text>
 							</view>
 						</view>
 					</view>
@@ -50,40 +35,20 @@
 			<view class="sub-list invalid" :class="subState">
 				<view class="tis" v-if="couponinvalidList.length==0">没有数据~</view>
 				<view class="row" v-for="(row,index) in couponinvalidList" :key="index">
-					<!-- 删除按钮 -->
-					<view class="menu" @tap.stop="deleteCoupon(row.id,couponinvalidList)">
-						<view class="icon shanchu"></view>
-					</view>
-					<!-- content -->
-					<view class="carrier" :class="[typeClass=='invalid'?theIndex==index?'open':oldIndex==index?'close':'':'']"
-					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
-						<view class="left">
-							<view class="title">
-								{{row.title}}
-							</view>
-							<view class="term">
-								{{row.termStart}} ~ {{row.termEnd}}
-							</view>
-							<view class="icon shixiao">
 
+					<!-- content -->
+					<view class="carrier" :class="[typeClass=='valid'?theIndex==index?'open':oldIndex==index?'close':'':'']">
+						<view class="content">
+							<text class="exit" @tap="notinter(row.id)">不感兴趣</text>
+							<view class="vipImg">
+								<image class="img" :src="row.avatar_web" mode="aspectFill"></image>
 							</view>
-							<view class="gap-top"></view>
-							<view class="gap-bottom"></view>
-						</view>
-						<view class="right invalid">
-							<view class="ticket">
-								<view class="num">
-									{{row.ticket}}
-								</view>
-								<view class="unit">
-									元
-								</view>
-							</view>
-							<view class="criteria">
-								{{row.criteria}}
-							</view>
-							<view class="use">
-								去查看
+							<text class="vipName">{{row.nickname_web}}</text>
+							<text class="vipTips">会员有礼入会即享</text>
+
+
+							<view class="lingqu" @tap="getVip(row.id)">
+								立即领取
 							</view>
 						</view>
 					</view>
@@ -99,70 +64,46 @@
 		data() {
 			return {
 				couponValidList: [{
-						id: 1,
-						title: "日常用品立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "满50使用"
+						"id": 17,
+						"nickname_web": "檀测试",
+						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
+						"type_id": 2,
+						"type": "一级会员",
+						"show": 1
 					},
 					{
-						id: 2,
-						title: "家用电器立减100元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "100",
-						criteria: "满500使用"
+						"id": 1,
+						"nickname_web": "檀测试",
+						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
+						"type_id": 2,
+						"type": "一级会员",
+						"show": 1
 					},
 					{
 						id: 3,
-						title: "全场立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "无门槛"
-					},
-					{
-						id: 4,
-						title: "全场立减50元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "50",
-						criteria: "满1000使用"
+						"nickname_web": "檀测试",
+						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
+						"type_id": 2,
+						"type": "一级会员",
+						"show": 1
 					}
 
 				],
 				couponinvalidList: [{
-						id: 1,
-						title: "日常用品立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "满50使用"
+						"id": 17,
+						"nickname_web": "檀测试",
+						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
+						"type_id": 2,
+						"type": "一级会员",
+						"show": 1
 					},
 					{
-						id: 2,
-						title: "家用电器立减100元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "100",
-						criteria: "满500使用"
-					},
-					{
-						id: 3,
-						title: "全场立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "无门槛"
-					},
-					{
-						id: 4,
-						title: "全场立减50元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "50",
-						criteria: "满1000使用"
+						"id": 1,
+						"nickname_web": "檀测试",
+						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
+						"type_id": 2,
+						"type": "一级会员",
+						"show": 1
 					}
 				],
 				headerTop: 0,
@@ -195,8 +136,24 @@
 				}
 			}, 1);
 			// #endif
+			this.loadData();
 		},
 		methods: {
+			async loadData() {
+
+				let res = await this.$req.ajax({
+					path: 'users_info/get_users_type_push',
+					title: '正在加载',
+					data: {
+						user_code: "ff8080816a9b6057016aa05476660000"
+
+					}
+				});
+				if (res.statusCode == 200 && res.data.code == 200) {
+					this.couponValidList = res.data.data.list;
+					// console.log(res.data.data.list)
+				}
+			},
 			switchType(type) {
 				if (this.typeClass == type) {
 					return;
@@ -213,6 +170,59 @@
 					this.subState = this.typeClass == 'valid' ? '' : this.subState;
 				}, 200)
 			},
+			delVipCard() {
+				let that = this;
+				this.$req.ajax({
+					path: 'users_info/del_users_type',
+					title: '删除',
+					data: {
+						user_code: "ff8080816a9b6057016aa05476660000"
+
+					},
+					finshFun: function(res) {
+						console.log(res);
+						that.loadData();
+					}
+				});
+
+
+
+			},
+			//领取会员卡
+			getVip(id) {
+				let that = this;
+				this.$req.ajax({
+					path: 'users_info/get_users_type',
+					title: '删除',
+					data: {
+						user_code: "ff8080816a9b6057016aa05476660000",
+						id:id
+
+					},
+					finshFun: function(res) {
+						console.log(res);
+						that.loadData();
+					}
+				});
+			},
+			//忽略会员卡
+			notinter(id) {
+				let that = this;
+				this.$req.ajax({
+					path: 'users_info/get_users_type_push',
+					title: '删除',
+					data: {
+						user_code: "ff8080816a9b6057016aa05476660000",
+						id:id
+				
+					},
+					finshFun: function(res) {
+						console.log(res);
+						that.loadData();
+					}
+				});
+			},
+
 			//控制左滑删除效果-begin
 			touchStart(index, event) {
 				//多点触控不触发
@@ -433,10 +443,12 @@
 		}
 
 		.row {
+
+			height: 329upx;
+			background: radial-gradient(circle, #415184 30%, #11141F);
+			border-radius: 12upx;
 			width: 92%;
-			height: 24vw;
 			margin: 20upx auto 10upx auto;
-			border-radius: 8upx;
 			// box-shadow: 0upx 0 10upx rgba(0,0,0,0.1);
 			align-items: center;
 			position: relative;
@@ -462,41 +474,146 @@
 			}
 
 			.carrier {
-				@keyframes showMenu {
-					0% {
-						transform: translateX(0);
-					}
+				width: 100%;
+				height: 100%;
 
-					100% {
-						transform: translateX(-28%);
-					}
-				}
+				.vipImg {
+					justify-content: center;
 
-				@keyframes closeMenu {
-					0% {
-						transform: translateX(-28%);
-					}
+					.img {
+						width: 80upx;
+						height: 80upx;
+						border-radius: 50%;
 
-					100% {
-						transform: translateX(0);
+						image {
+							width: 80upx;
+							height: 80upx;
+						}
 					}
 				}
 
-				&.open {
-					animation: showMenu 0.25s linear both;
+				.vipName {
+					margin-top: 20upx;
+					font-size: 30upx;
+					color: #fff;
 				}
 
-				&.close {
-					animation: closeMenu 0.15s linear both;
+				.vipTips {
+					font-size: 24upx;
+					color: #FFD082;
 				}
 
-				background-color: #fff;
-				position: absolute;
+				.lingqu {
+					width: 220upx;
+					height: 50upx;
+					background: linear-gradient(rgba(230, 204, 147, 1) 0%, rgba(200, 157, 90, 1) 100%);
+					border-radius: 25upx;
+
+					margin: 25upx auto;
+					text-align: center;
+					font-size: 24upx;
+					color: #171B2C;
+					justify-content: center;
+					align-items: center;
+				}
+
+				.content {
+					display: flex;
+					position: relative;
+					flex-direction: column;
+					width: 100%;
+					height: 100%;
+					text-align: center;
+					padding-top: 50upx;
+
+					.exit {
+						position: absolute;
+						right: 24upx;
+						top: 24upx;
+						font-size: 22upx;
+					}
+
+					.vipname {
+						font-size: 80upx;
+						color: #fff;
+						font-family: PingFangSC-Semibold;
+						text-align: center;
+						justify-content: center;
+					}
+
+					.descript {
+						justify-content: center;
+						font-size: 24upx;
+						position: relative;
+						margin-top: 10upx;
+
+						.beforeline,
+						.afterline {
+
+							position: absolute;
+							width: 100upx;
+							height: 1px;
+							background-color: #D5D5D5;
+							top: 50%;
+
+						}
+
+						.beforeline {
+							left: 170upx;
+						}
+
+						.afterline {
+							right: 170upx;
+						}
+					}
+
+					.info {
+						position: absolute;
+						width: 100%;
+						bottom: 20upx;
+						left: 0;
+						display: flex;
+						align-items: center;
+						padding: 10upx 20upx;
+
+						.img {
+							width: 50upx;
+							height: 50upx;
+							border-radius: 50%;
+							overflow: hidden;
+							margin-right: 30upx;
+
+							image {
+								width: 50upx;
+								height: 50upx;
+							}
+						}
+
+						.nickname_web {
+							font-size: 28upx;
+							color: #fff;
+						}
+
+						.level {
+							font-size: 19upx;
+							color: #fff;
+							background: rgba(47, 58, 98, 1);
+							border-radius: 40upx;
+							padding: 5upx 30upx;
+							margin-left: 20upx;
+						}
+					}
+				}
+
+
+
+				position: relative;
 				width: 100%;
 				padding: 0 0;
 				height: 100%;
 				z-index: 3;
 				flex-wrap: nowrap;
+				color: #fff;
 
 				.left {
 					width: 100%;
