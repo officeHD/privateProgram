@@ -269,7 +269,7 @@
 
 			this.page = 1;
 			this.loadData();
-
+				this.getGoodList();
 			//开启定时器
 			this.Timer();
 			//加载活动专区
@@ -289,15 +289,18 @@
 					this.swiperList[0].image_url = "../../static/temp/banner1.jpg";
 					this.swiperList[1].image_url = "../../static/temp/banner2.jpg";
 				}
-				this.getGoodList();
 			},
 			async getGoodList() {
+				 
 				const goodlist = await this.$req.ajax({
-					path: 'goods_info/get_goods_list',
+					path: 'zdapp/goods/get_goods_list',
 					title: '正在加载',
 					data: {
-						user_code: "ff8080816a9b6057016aa05476660000",
+						group_id: "ff8080816a495427016a496f873d0017",
+						keywords:"",
+						categoryid:"",
 						page: this.page,
+						page_num:"10"
 					}
 				});
 				if (goodlist.data.code == 200) {
