@@ -278,7 +278,7 @@
 		methods: {
 			async loadData() {
 				const res = await this.$req.ajax({
-					path: 'banner_info/get_banner_list',
+					path: 'zdapp/banner/get_banner_list',
 					title: '正在加载',
 					data: {
 						type: "1"

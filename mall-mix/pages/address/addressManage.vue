@@ -6,12 +6,12 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">手机号</text>
-			<input class="input" type="number" v-model="addressData.mobile" placeholder="收货人手机号码" placeholder-class="placeholder" />
+			<input class="input" type="number" v-model="addressData.phone" placeholder="收货人手机号码" placeholder-class="placeholder" />
 		</view>
 		<view class="row b-b">
 			<text class="tit">地址</text>
 			<text @click="togglePopup('bottoms')" class="input">
-				{{addressData.addressName}}
+				{{addressData.province}} {{addressData.city}} {{addressData.area}}
 			</text>
 			<text class="yticon icon-shouhuodizhi"></text>
 		</view>
@@ -21,12 +21,12 @@
 		</uni-popup>
 		<view class="row b-b">
 			<text class="tit">门牌号</text>
-			<input class="input" type="text" v-model="addressData.area" placeholder="楼号、门牌" placeholder-class="placeholder" />
+			<input class="input" type="text" v-model="addressData.address" placeholder="楼号、门牌" placeholder-class="placeholder" />
 		</view>
 
 		<view class="row default-row">
 			<text class="tit">设为默认</text>
-			<switch :checked="addressData.defaule" color="#fa436a" @change="switchChange" />
+			<switch :checked="addressData.is_default==='2'" color="#fa436a" @change="switchChange" />
 		</view>
 
 		<button class="add-btn" @click="confirm">提交</button>
@@ -46,12 +46,15 @@
 				opentype: "",
 				addressData: {
 
-					name: '',
-					mobile: '',
-					addressName: '在地图选择',
-					address: '',
-					area: '',
-					default: false
+					"id": 10,
+					"name": "檀-2",
+					"phone": "15145112434",
+					"province": "河北省",
+					"city": "唐山市",
+					"area": "路南区",
+					"address": "黄山路123号",
+					"is_default": 2,
+					"create_time": "2019-04-18 15:09:22"
 				}
 			}
 		},
@@ -69,7 +72,7 @@
 		},
 		methods: {
 			switchChange(e) {
-				this.addressData.default = e.detail;
+				this.addressData.is_default = e.detail ? "2" : "1";
 			},
 			onCityClick(e) {
 				this.provinceName = e.province.label;
@@ -100,22 +103,41 @@
 					this.$api.msg('请填写收货人姓名');
 					return;
 				}
-				if (!/(^1[3|4|5|7|8][0-9]{9}$)/.test(data.mobile)) {
+				if (!/(^1[3|4|5|7|8][0-9]{9}$)/.test(data.phone)) {
 					this.$api.msg('请输入正确的手机号码');
 					return;
 				}
-				if (!data.address) {
+				if (!data.area) {
 					this.$api.msg('请在地图选择所在位置');
 					return;
 				}
-				if (!data.area) {
+				if (!data.address) {
 					this.$api.msg('请填写门牌号信息');
 					return;
 				}
+				this.$req.ajax({
+					path: 'zdapp/address/edit_address_info',
+					title: '正在加载',
+					data: {
+						users_id: "ff8080816a52909d016a533107f40000",
+						"id": data.id,
+						"name": data.name,
+						"phone": data.phone,
+						"province": data.province,
+						"city": data.city,
+						"area": data.area,
+						"address": data.address,
+						"is_default": data.is_default
+					},
+					finshFun: function(res) {
+						 
+					}
+
+				});
 
 				//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
 				this.$api.prePage().refreshList(data, this.manageType);
-				this.$api.msg(`地址${this.manageType=='edit' ? '修改': '添加'}成功`);
+				// this.$api.msg(`地址${this.manageType=='edit' ? '修改': '添加'}成功`);
 				setTimeout(() => {
 					uni.navigateBack()
 				}, 800)

@@ -42,7 +42,7 @@ const prePage = () => {
 	return prePage.$vm;
 }
 
-req.defaultReq.url = 'https://www.i2b2b.com/public/index.php/web/' //设置公共url部分
+req.defaultReq.url = 'https://www.i2b2b.com/public/index.php/' //设置公共url部分
 req.defaultReq.type = "POST"; //设置公共请求类型
 Vue.prototype.$req = req;
 Vue.config.productionTip = false

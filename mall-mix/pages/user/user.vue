@@ -10,11 +10,11 @@
 			<view class="user-info-box"  @click="navTo('/pages/user/userinfo/userinfo?state=1')">
 				<view class="user-info-box-l">
 					<view class="portrait-box">
-						<image class="portrait" :src="userInfo.portrait || '/static/missing-face.png'"></image>
+						<image class="portrait" :src="userInfo.headimgurl || '/static/missing-face.png'"></image>
 					</view>
 					<view class="info-box">
 						<text class="username ml20 f28 c3">{{ userInfo.nickname || '游客' }}</text>
-						<text class="userphone ml20 c6 f24">{{ userInfo.mobile || '13262626262' }}</text>
+						<text class="userphone ml20 c6 f24">{{ userInfo.phone_number || '13262626262' }}</text>
 					</view>
 				</view>
 
@@ -23,12 +23,12 @@
 			<view class="account">
 				<view class="tj-item br">
 					<text class="f24 c6">余额：</text>
-					<text class="num f24 c6">￥128.8</text>
+					<text class="num f24 c6">￥{{userInfo.balance}}</text>
 
 				</view>
 				<view class="tj-item">
 					<text class="f24 c6">可用村贝：</text>
-					<text class="num f24 c6">0</text>
+					<text class="num f24 c6">{{userInfo.group_cowry}}</text>
 				</view>
 			</view>
 		 
@@ -165,12 +165,17 @@
 		},
 		data() {
 			return {
+				userInfo:{
+					
+				},
 				coverTransform: 'translateY(0px)',
 				coverTransition: '0s',
 				moving: false
 			};
 		},
-		onLoad() {},
+		onLoad() {
+			this.loadData();
+		},
 		// #ifndef MP
 		onNavigationBarButtonTap(e) {
 			const index = e.index;
@@ -192,9 +197,23 @@
 		},
 		// #endif
 		computed: {
-			...mapState(['hasLogin', 'userInfo'])
+			...mapState(['hasLogin'])
 		},
 		methods: {
+			async loadData() {
+				const res = await this.$req.ajax({
+					path: 'zdapp/users/get_users_info',
+					title: '正在加载',
+					data: {
+						users_id: "ff8080816a52909d016a533107f40000"
+					}
+				});
+				if (res.data.code == 200) {
+					 console.log(res.data.data)
+					 this.userInfo=res.data.data;
+				}
+			 
+			},
 			/**
 			 * 统一跳转接口,拦截未登录路由
 			 * navigator标签现在默认没有转场动画，所以用view
