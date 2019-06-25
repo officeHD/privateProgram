@@ -253,10 +253,9 @@
 			let id = options.id;
 			if (id) {
 				const res = await this.$req.ajax({
-					path: 'goods_info/get_goods_info',
+					path: 'zdapp/goods/get_goods_info',
 					title: '正在加载',
 					data: {
-						user_code: "ff8080816a9b6057016aa05476660000",
 						id: id
 					}
 				});

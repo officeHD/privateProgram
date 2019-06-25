@@ -76,13 +76,27 @@
 			<view class="title">
 				好货推荐
 			</view>
+			
 			<view class="product-list">
-				<view class="product" v-for="product in productList" :key="product.id" @tap="toGoods(product)">
-					<image mode="widthFix" :src="product.thumb"></image>
-					<view class="name">{{ product.title }}</view>
-					<view class="info">
-						<view class="price">¥{{ product.marketprice }}</view>
-						<view class="slogan">{{ product.slogan }}</view>
+				<view class="lefBox">
+					<view class="product" v-for="(product, index) in productList" :key="index" @tap="toGoods(product)" v-if="index%2==0">
+						<image class="pimg" mode="widthFix" :src="product.thumb||defaultImg"  @error="imageError(index)"></image>
+						<view class="name">{{ product.title }}</view>
+						<view class="info">
+							<view class="price">¥{{ product.price }}</view>
+							<view class="slogan">{{ product.slogan }}</view>
+						</view>
+					</view>
+				</view>
+				<view class="lefBox">
+
+					<view class="product" v-for="(product,index) in productList" :key="index" @tap="toGoods(product)" v-if="index%2==1">
+						<image class="pimg" mode="widthFix" :src="product.thumb||defaultImg" @error="imageError(index)"></image>
+						<view class="name">{{ product.title }}</view>
+						<view class="info">
+							<view class="price">¥{{ product.price }}</view>
+							<view class="slogan">{{ product.slogan }}</view>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -105,6 +119,7 @@
 				statusTop: null,
 				city: '北京',
 				currentSwiper: 0,
+				defaultImg:"../../static/noImg.png",
 				// 轮播图片
 				swiperList: [{
 						id: 1,
@@ -237,6 +252,7 @@
 				uni.stopPullDownRefresh();
 			}, 1000);
 		},
+		
 		//上拉加载，需要自己在page.json文件中配置"onReachBottomDistance"
 		onReachBottom() {
 			// uni.showToast({
@@ -269,7 +285,7 @@
 
 			this.page = 1;
 			this.loadData();
-				this.getGoodList();
+			this.getGoodList();
 			//开启定时器
 			this.Timer();
 			//加载活动专区
@@ -291,16 +307,16 @@
 				}
 			},
 			async getGoodList() {
-				 
+
 				const goodlist = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_list',
 					title: '正在加载',
 					data: {
-						group_id: "ff8080816a495427016a496f873d0017",
-						keywords:"",
-						categoryid:"",
+						group_id: "2c918aee6a48c1df016a48cdc53a0002",
+						keywords: "",
+						categoryid: "",
 						page: this.page,
-						page_num:"10"
+						page_num: "10"
 					}
 				});
 				if (goodlist.data.code == 200) {
@@ -447,8 +463,8 @@
 				// 	title: '商品' + item.id,
 				// 	icon: 'none'
 				// });
-				 
-				
+
+
 				uni.navigateTo({
 					url: `/pages/product/product?id=${id}`
 				});
@@ -456,6 +472,9 @@
 			//轮播图指示器
 			swiperChange(event) {
 				this.currentSwiper = event.detail.current;
+			},
+			imageError(index){
+				this.productList[index].thumb=this.defaultImg;
 			}
 		}
 	};
@@ -853,17 +872,31 @@
 			padding: 0 4% 3vw 4%;
 			display: flex;
 			justify-content: space-between;
-			flex-wrap: wrap;
+
+
+			.lefBox {
+				width: 50%;
+				padding: 10upx;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+			}
 
 			.product {
-				width: 48%;
+				width: 100%;
 				border-radius: 20upx;
 				background-color: #fff;
 				margin: 0 0 15upx 0;
 				box-shadow: 0upx 5upx 25upx rgba(0, 0, 0, 0.1);
 
+				.pimg {
+					width: 100%;
+					height: auto;
+				}
+
 				image {
 					width: 100%;
+					height: auto;
 					border-radius: 20upx 20upx 0 0;
 				}
 
