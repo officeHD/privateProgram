@@ -2,31 +2,36 @@
 	<view class="container">
 		<view class="carousel">
 			<swiper indicator-dots circular=true duration="400">
-				<swiper-item class="swiper-item" v-for="(item,index) in imgList" :key="index">
+				<swiper-item class="swiper-item" v-if="shopInfo.video">
 					<view class="image-wrapper">
-						<image :src="item.src" class="loaded" mode="aspectFill"></image>
+						<video class="myVideo" id="" :src="shopInfo.video" enable-danmu danmu-btn controls></video>
+					</view>
+				</swiper-item>
+				<swiper-item class="swiper-item" v-for="(item,index) in bannerImg" :key="index">
+					<view class="image-wrapper">
+						<image :src="item" class="loaded" mode="aspectFill"></image>
 					</view>
 				</swiper-item>
 			</swiper>
 		</view>
 
 		<view class="introduce-section">
-			<text class="title">恒源祥2019春季长袖白色t恤 新款春装</text>
+			<text class="title">{{shopInfo.title}}</text>
 			<view class="price-box">
 				<text class="price-tip">¥</text>
-				<text class="price">341.6</text>
-				<text class="m-price">¥488</text>
-				<text class="coupon-tip">7折</text>
+				<text class="price">{{shopInfo.price}}</text>
+				<text class="m-price">¥{{shopInfo.old_price}}</text>
+				<text class="coupon-tip" v-for="(item,index) in shopLabel" :key="index">{{item}}</text>
 			</view>
-			<view class="bot-row">
+			<!-- <view class="bot-row">
 				<text>销量: 108</text>
 				<text>库存: 4690</text>
 				<text>浏览量: 768</text>
-			</view>
+			</view> -->
 		</view>
 
 		<!--  分享 -->
-		<view class="share-section" @click="share">
+		<!-- <view class="share-section" @click="share">
 			<view class="share-icon">
 				<text class="yticon icon-xingxing"></text>
 				返
@@ -39,9 +44,18 @@
 			</view>
 
 		</view>
-
+ -->
 		<view class="c-list">
-			<view class="c-row b-b" @click="toggleSpec">
+			<view class="c-row b-b" @click="toggleSpec('Param')">
+				<text class="tit">商品参数</text>
+				<view class="con">
+					<text class="selected-text mr10" v-for="(sItem, sIndex) in goodsParam" :key="sIndex">
+						{{sItem.title}}:{{sItem.description}}
+					</text>
+				</view>
+				<text class="yticon icon-you"></text>
+			</view>
+			<view class="c-row b-b" @click="toggleSpec('Spec')">
 				<text class="tit">购买类型</text>
 				<view class="con">
 					<text class="selected-text" v-for="(sItem, sIndex) in specSelected" :key="sIndex">
@@ -50,7 +64,7 @@
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="c-row b-b">
+			<view class="c-row b-b" @click="toggleSpec('Coupon')">
 				<text class="tit">优惠券</text>
 				<text class="con t-r red">领取优惠券</text>
 				<text class="yticon icon-you"></text>
@@ -127,7 +141,7 @@
 		<view class="popup spec" :class="specClass" @touchmove.stop.prevent="stopPrevent" @click="toggleSpec">
 			<!-- 遮罩层 -->
 			<view class="mask"></view>
-			<view class="layer attr-content" @click.stop="stopPrevent">
+			<view class="layer attr-content" @click.stop="stopPrevent" v-if="toogleType=='Spec'">
 				<view class="a-t">
 					<image src="https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg"></image>
 					<view class="right">
@@ -152,6 +166,49 @@
 				</view>
 				<button class="btn" @click="toggleSpec">完成</button>
 			</view>
+			<view class="layer attr-content " v-if="toogleType=='Param'">
+				<view class="titleC">产品参数</view>
+				<view class="c-list">
+					<view class="c-row b-b" v-for="(sItem, sIndex) in goodsParam" :key="sIndex">
+						<text class="tit">{{sItem.title}}</text>
+						<view class="con">
+							<text class="selected-text mr10">
+								{{sItem.description}}
+							</text>
+						</view>
+					</view>
+				</view>
+
+				<button class="btn" @click="toggleSpec">关闭</button>
+			</view>
+			<view class="layer attr-content " v-if="toogleType=='Coupon'">
+				<view class="row" v-for="(row,index) in coupon_list" :key="index">
+
+					<view class="carrier">
+						<view class="left">
+							<view class="title">
+								<text v-if="row.discount_type==1">{{row.discount}}折</text>
+								<text v-else>￥{{row.reduce}}</text>
+							</view>
+							<view class="criteria">
+								满{{row.min_price}}元使用 <text>（{{row.discount_type|couponType}} ）</text>
+							</view>
+							<view class="term">
+								{{row.start_time}} ~ {{row.end_time}}
+							</view>
+							<view class="gap-top"></view>
+							<view class="gap-bottom"></view>
+						</view>
+						<view class="right">
+
+							<view class="use">
+								领取
+							</view>
+						</view>
+					</view>
+				</view>
+				<button class="btn" @click="toggleSpec">关闭</button>
+			</view>
 		</view>
 		<!-- 分享 -->
 		<share ref="share" :contentHeight="580" :shareList="shareList"></share>
@@ -164,8 +221,53 @@
 		components: {
 			share
 		},
+		computed: {
+			shopLabel() {
+				let lable = [];
+				if (this.shopInfo.label) {
+					lable = this.shopInfo.label.split(',')
+				}
+				return lable
+			},
+			bannerImg() {
+				let lable = [];
+				if (this.shopInfo.thumb_url) {
+					lable = this.shopInfo.thumb_url.split(',')
+				}
+				return lable
+			}
+		},
 		data() {
 			return {
+				co_id: "", //商家D
+				toogleType: "",
+				shopInfo: {
+					"id": 1,
+					"title": "毛绒娃娃",
+					"subtitle": "儿童玩具",
+					"label": "春季新品",
+					"postage": "0.00",
+					"content": "这里是详情",
+					"video": "http://c_inventory.i2f2f.com/upload/20190419/a4c04fcbb3d8262226b8037df0316ea2.mp4",
+					"price": "0.01",
+					"old_price": "123.12",
+					"thumb": "https://www.i2f2f.com/attachment/images/26/2019/04/giXIQxrG74ZXPnLnnFxnd4Rn0QpCFP.jpg",
+					"thumb_url": "../../images/banner.png,../../images/banner1.png",
+					"is_service": null
+
+				},
+				goodsParam: [{
+						"id": 53,
+						"title": "品牌",
+						"description": "茵曼"
+					},
+					{
+						"id": 54,
+						"title": "适用年龄",
+						"description": "18-25周岁"
+					},
+				],
+				coupon_list:[],
 				specClass: 'none',
 				specSelected: [],
 
@@ -251,6 +353,8 @@
 
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
 			let id = options.id;
+			let co_id = options.co_id;
+			this.co_id = co_id;
 			if (id) {
 				const res = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_info',
@@ -259,7 +363,38 @@
 						id: id
 					}
 				});
-				console.log(res)
+				if (res.data.code == 200) {
+					this.shopInfo = res.data.data;
+				}
+				const goods_param = await this.$req.ajax({
+					path: 'zdapp/goods/get_goods_param',
+					title: '正在加载',
+					data: {
+						goods_id: id
+					}
+				});
+				if (goods_param.data.code == 200) {
+					// console.log(goods_param.data.data)
+					// this.goodsParam = goods_param.data.data;
+				}
+
+
+
+			}
+			if (co_id) {
+
+				const coupon_list = await this.$req.ajax({
+					path: 'zdapp/coupon/get_coupon_list',
+					title: '正在加载',
+					data: {
+						co_id: co_id
+					}
+				});
+				if (coupon_list.data.code == 200) {
+					console.log(coupon_list.data.data)
+					 
+					this.coupon_list = coupon_list.data.data;
+				}
 
 			}
 
@@ -278,7 +413,10 @@
 		},
 		methods: {
 			//规格弹窗开关
-			toggleSpec() {
+			toggleSpec(type) {
+				if (type) {
+					this.toogleType = type;
+				}
 				if (this.specClass === 'show') {
 					this.specClass = 'hide';
 					setTimeout(() => {
@@ -288,6 +426,7 @@
 					this.specClass = 'show';
 				}
 			},
+
 			//选择规格
 			selectSpec(index, pid) {
 				let list = this.specChildList;
@@ -330,7 +469,7 @@
 					url: `/pages/evaluate/evaluate`
 				})
 			},
-			
+
 			stopPrevent() {}
 		},
 
@@ -343,13 +482,17 @@
 		padding-bottom: 160upx;
 	}
 
+	.mr10 {
+		margin-right: 10upx;
+	}
+
 	.icon-you {
 		font-size: $font-base + 2upx;
 		color: #888;
 	}
 
 	.carousel {
-		height: 722upx;
+		height: 700upx;
 		position: relative;
 
 		swiper {
@@ -359,13 +502,18 @@
 		.image-wrapper {
 			width: 100%;
 			height: 100%;
+
+			.myVideo {
+				width: 100%;
+				height: 100%;
+			}
 		}
 
 		.swiper-item {
 			display: flex;
 			justify-content: center;
 			align-content: center;
-			height: 750upx;
+			height: 700upx;
 			overflow: hidden;
 
 			image {
@@ -773,6 +921,12 @@
 			border-radius: 10upx 10upx 0 0;
 			background-color: #fff;
 
+			.titleC {
+				text-align: center;
+				padding: 20upx;
+				font-size: 30upx;
+			}
+
 			.btn {
 				height: 66upx;
 				line-height: 66upx;
@@ -821,6 +975,171 @@
 
 			100% {
 				transform: translateY(120%);
+			}
+		}
+
+		.row {
+			width: 100%;
+			height: 150upx;
+			margin: 20upx 0;
+			border-radius: 8upx;
+			// box-shadow: 0upx 0 10upx rgba(0,0,0,0.1);
+			align-items: center;
+			position: relative;
+			overflow: hidden;
+			z-index: 4;
+			border: 0;
+
+			.menu {
+				.icon {
+					color: #fff;
+					font-size: 50upx;
+				}
+
+				position: absolute;
+				width: 28%;
+				height: 100%;
+				right: 0;
+				justify-content: center;
+				align-items: center;
+				background-color: red;
+				color: #fff;
+				z-index: 2;
+			}
+
+			.carrier {
+				 
+
+				&.open {
+					animation: showMenu 0.25s linear both;
+				}
+
+				&.close {
+					animation: closeMenu 0.15s linear both;
+				}
+
+				background-color: #fff;
+				position: absolute;
+				width: 100%;
+				padding: 0 0;
+				height: 100%;
+				z-index: 3;
+				flex-wrap: nowrap;
+				display: flex;
+				.left {
+					 flex: 1;
+					background: #E0F0F3;
+					border-right: 2upx dashed #999999;
+
+					.title {
+						padding-top: 10upx;
+						width: 90%;
+						margin: 0 5%;
+						font-size: 40upx;
+						color: #E31010;
+					}
+
+					.criteria {
+						width: 90%;
+						margin: 0 5%;
+						font-size: 23upx;
+						color: #666666;
+					}
+
+					.term {
+						width: 90%;
+						margin: 0 5%;
+						font-size: 20upx;
+						color: #999;
+						margin-top: 15upx;
+					}
+
+					position: relative;
+
+					.gap-top,
+					.gap-bottom {
+						position: absolute;
+						width: 20upx;
+						height: 20upx;
+						right: -10upx;
+						border-radius: 100%;
+						background-color: #f5f5f5;
+					}
+
+					.gap-top {
+						top: -10upx;
+					}
+
+					.gap-bottom {
+						bottom: -10upx;
+					}
+
+					.shixiao {
+						position: absolute;
+						right: 20upx;
+						font-size: 150upx;
+						z-index: 6;
+						color: rgba(153, 153, 153, 0.2)
+					}
+				}
+
+				.right {
+					flex-shrink: 0;
+					width: 160upx;
+					color: #fff;
+					background: #E0F0F3;
+					display: flex;
+					&.invalid {
+						background: linear-gradient(to right, #aaa, #999);
+
+						.use {
+							color: #aaa;
+						}
+					}
+
+					justify-content: center;
+					align-items: center;
+
+					.ticket,
+					.criteria {
+						width: 100%;
+					}
+
+					.ticket {
+						padding-top: 1vw;
+						justify-content: center;
+						align-items: baseline;
+						height: 6vw;
+
+						.num {
+							font-size: 42upx;
+							font-weight: 600;
+						}
+
+						.unit {
+							font-size: 24upx;
+						}
+					}
+
+					.criteria {
+						justify-content: center;
+
+						font-size: 28upx;
+					}
+
+					.use {
+						width: 112upx;
+						height: 54upx;
+						 text-align: center;
+						 line-height: 54upx;
+						font-size: 26upx;
+						background: linear-gradient(to right, #66ADE5, #1589E3);
+
+						color: #fff;
+						border-radius: 4upx;
+						padding: 0 10upx;
+					}
+				}
 			}
 		}
 	}
@@ -905,5 +1224,6 @@
 				background: transparent;
 			}
 		}
+
 	}
 </style>

@@ -208,13 +208,12 @@
 		methods: {
 			async loadData() {
 				let res = await this.$req.ajax({
-					path: 'users_coupon_info/get_coupon_list',
+					path: 'zdapp/coupon/get_users_coupon_list',
 					title: '正在加载',
 					data: {
-						user_code: "ff8080816a9b6057016aa05476660000",
-						type: "",
-						page: "1",
-						page_num: "10"
+						users_id: "ff8080816a9b6057016aa05476660000",
+						type: ""
+						 
 					}
 				});
 				if (res.statusCode == 200 && res.data.code == 200) {

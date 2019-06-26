@@ -466,7 +466,7 @@
 
 
 				uni.navigateTo({
-					url: `/pages/product/product?id=${id}`
+					url: `/pages/product/product?id=${id}&co_id=${item.co_id}`
 				});
 			},
 			//轮播图指示器

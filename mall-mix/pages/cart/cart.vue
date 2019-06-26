@@ -92,9 +92,9 @@
 			async loadData() {
 
 				let res = await this.$req.ajax({
-					path: 'order_info/get_order_list',
+					path: 'zdapp/cart/get_order_list',
 					title: '正在加载',
-					data:{user_code:"ff8080816a9b6057016aa05476660000",type:"1",page:"1"}
+					data:{users_id:"ff8080816a9b6057016aa05476660000",type:"1",page:"1"}
 				});
 				if (res.statusCode == 200 && res.data.code == 200) {
 					this.cartList = res.data.data.list;
