@@ -173,6 +173,14 @@
 						</text>
 					</view>
 				</view>
+				<view class="attr-list">
+					<text>商品数量</text>
+					<view class="item-list numberAdd">
+					<uni-number-box class="step" :min="1" :max="1000" :value="number"
+					 :isMax="number>=item.stock?true:false" :isMin="number===1"   @eventChange="numberChange"></uni-number-box>
+					 </view>
+				</view>
+				
 				<button class="btn" @click="toggleSpec">完成</button>
 			</view>
 			<view class="layer attr-content " v-if="toogleType=='Param'">
@@ -226,9 +234,10 @@
 
 <script>
 	import share from '@/components/share';
+	import uniNumberBox from '@/components/uni-number-box.vue'
 	export default {
 		components: {
-			share
+			share,uniNumberBox
 		},
 		computed: {
 			shopLabel() {
@@ -248,6 +257,7 @@
 		},
 		data() {
 			return {
+				number:"",
 				addressData: {
 					id:"",
 					province:"",
@@ -394,7 +404,10 @@
 					this.specClass = 'show';
 				}
 			},
-
+			//选择数量
+			numberChange(data) {
+				this.number = data.number; 
+			},
 			//选择规格
 			selectSpec(index, pid) {
 				console.log(index, pid)
@@ -458,7 +471,7 @@
 						group_id: "2c918aee6a48c1df016a48cdc53a0002",
 						option_id: option_idStr,
 						address_id: this.addressData.id,
-						number: "1"
+						number: this.number
 					}
 				});
 				console.log(res)
@@ -878,6 +891,9 @@
 				background: #fbebee;
 				color: $uni-color-primary;
 			}
+		}
+		.numberAdd{
+			position: relative;
 		}
 	}
 
