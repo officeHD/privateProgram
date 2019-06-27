@@ -64,7 +64,7 @@
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="c-row b-b" @click="toggleSpec('Coupon')">
+			<view class="c-row b-b" @click="toggleSpec('Coupon')" v-if="coupon_list.lenght>0">
 				<text class="tit">优惠券</text>
 				<text class="con t-r red">领取优惠券</text>
 				<text class="yticon icon-you"></text>
@@ -112,7 +112,7 @@
 			<view class="d-header">
 				<text>图文详情</text>
 			</view>
-			<rich-text :nodes="desc"></rich-text>
+			 <image class="img" :src="shopInfo.thumb" mode="widthFix"></image>
 		</view>
 
 		<!-- 底部操作菜单 -->
@@ -156,10 +156,10 @@
 					</view>
 				</view>
 				<view v-for="(item,index) in specList" :key="index" class="attr-list">
-					<text>{{item.name}}</text>
+					<text>{{item.title}}</text>
 					<view class="item-list">
-						<text v-for="(childItem, childIndex) in specChildList" v-if="childItem.pid === item.id" :key="childIndex" class="tit"
-						 :class="{selected: childItem.selected}" @click="selectSpec(childIndex, childItem.pid)">
+						<text v-for="(childItem, childIndex) in item.content" :key="childIndex" class="tit" :class="{selected: childItem.selected}"
+						 @click="selectSpec(childIndex, index)">
 							{{childItem.name}}
 						</text>
 					</view>
@@ -267,7 +267,7 @@
 						"description": "18-25周岁"
 					},
 				],
-				coupon_list:[],
+				coupon_list: [],
 				specClass: 'none',
 				specSelected: [],
 
@@ -294,11 +294,28 @@
 				`,
 				specList: [{
 						id: 1,
-						name: '尺寸',
+						title: '尺寸',
+						content: [{
+							"id": 28,
+							"name": "白色"
+						}, {
+							"id": 29,
+							"name": "黑色",
+							selected: true
+						}]
 					},
+
 					{
 						id: 2,
 						name: '颜色',
+						content: [{
+							"id": 28,
+							"name": "白色"
+						}, {
+							"id": 29,
+							"name": "黑色"
+						}]
+
 					},
 				],
 				specChildList: [{
@@ -375,7 +392,17 @@
 				});
 				if (goods_param.data.code == 200) {
 					// console.log(goods_param.data.data)
-					// this.goodsParam = goods_param.data.data;
+					this.goodsParam = goods_param.data.data;
+				}
+				const goods_spec = await this.$req.ajax({
+					path: 'zdapp/goods/get_goods_spec',
+					title: '正在加载',
+					data: {
+						goods_id: id
+					}
+				});
+				if (goods_spec.data.code == 200) {
+					this.specList = goods_spec.data.data;
 				}
 
 
@@ -392,22 +419,28 @@
 				});
 				if (coupon_list.data.code == 200) {
 					console.log(coupon_list.data.data)
-					 
+
 					this.coupon_list = coupon_list.data.data;
 				}
+
+
+
+
 
 			}
 
 
 			//规格 默认选中第一条
 			this.specList.forEach(item => {
-				for (let cItem of this.specChildList) {
-					if (cItem.pid === item.id) {
-						this.$set(cItem, 'selected', true);
-						this.specSelected.push(cItem);
-						break; //forEach不能使用break
+				item.content.forEach((citem,index) => {
+					 
+					if (index==0) {
+						this.$set(citem, "pid", item.id)
+						this.$set(citem, "selected", true)
+						this.specSelected.push(citem);
 					}
-				}
+				})
+			
 			})
 			this.shareList = await this.$api.json('shareList');
 		},
@@ -429,27 +462,26 @@
 
 			//选择规格
 			selectSpec(index, pid) {
-				let list = this.specChildList;
-				list.forEach(item => {
-					if (item.pid === pid) {
-						this.$set(item, 'selected', false);
-					}
-				})
+				console.log(index, pid)
+				this.specList[pid].content.forEach(item => {
 
-				this.$set(list[index], 'selected', true);
-				//存储已选择
-				/**
-				 * 修复选择规格存储错误
-				 * 将这几行代码替换即可
-				 * 选择的规格存放在specSelected中
-				 */
+
+					this.$set(item, "selected", false)
+				})
+				this.$set(this.specList[pid].content[index], 'selected', true);
+				console.log(this.specList)
+
 				this.specSelected = [];
-				list.forEach(item => {
-					if (item.selected === true) {
-						this.specSelected.push(item);
-					}
-				})
+				this.specList.forEach(item => {
+					item.content.forEach(citem => {
+						if (citem.selected === true) {
+							this.$set(citem, "pid", item.id)
+							this.specSelected.push(citem);
+						}
+					})
 
+				})
+				console.log(this.specSelected)
 			},
 			//分享
 			share() {
@@ -766,7 +798,12 @@
 	.detail-desc {
 		background: #fff;
 		margin-top: 16upx;
-
+		image{
+			width: 100%;
+		}
+		.img{
+			width: 100%;
+		}
 		.d-header {
 			display: flex;
 			justify-content: center;
@@ -1008,7 +1045,7 @@
 			}
 
 			.carrier {
-				 
+
 
 				&.open {
 					animation: showMenu 0.25s linear both;
@@ -1026,8 +1063,9 @@
 				z-index: 3;
 				flex-wrap: nowrap;
 				display: flex;
+
 				.left {
-					 flex: 1;
+					flex: 1;
 					background: #E0F0F3;
 					border-right: 2upx dashed #999999;
 
@@ -1089,6 +1127,7 @@
 					color: #fff;
 					background: #E0F0F3;
 					display: flex;
+
 					&.invalid {
 						background: linear-gradient(to right, #aaa, #999);
 
@@ -1130,8 +1169,8 @@
 					.use {
 						width: 112upx;
 						height: 54upx;
-						 text-align: center;
-						 line-height: 54upx;
+						text-align: center;
+						line-height: 54upx;
 						font-size: 26upx;
 						background: linear-gradient(to right, #66ADE5, #1589E3);
 
