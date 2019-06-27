@@ -55,8 +55,17 @@
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
+			<navigator url="/pages/address/address?source=1" class="c-row b-b">
+				<text class="tit">收货地址</text>
+				<view class="con">
+					<text class="selected-text">
+						{{addressData.province}} {{addressData.city}} {{addressData.area}} {{addressData.address}}
+					</text>
+				</view>
+				<text class="yticon icon-you"></text>
+			</navigator>
 			<view class="c-row b-b" @click="toggleSpec('Spec')">
-				<text class="tit">购买类型</text>
+				<text class="tit">商品规格</text>
 				<view class="con">
 					<text class="selected-text" v-for="(sItem, sIndex) in specSelected" :key="sIndex">
 						{{sItem.name}}
@@ -112,7 +121,7 @@
 			<view class="d-header">
 				<text>图文详情</text>
 			</view>
-			 <image class="img" :src="shopInfo.thumb" mode="widthFix"></image>
+			<image class="img" :src="shopInfo.thumb" mode="widthFix"></image>
 		</view>
 
 		<!-- 底部操作菜单 -->
@@ -132,7 +141,7 @@
 
 			<view class="action-btn-group">
 				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
-				<button type="primary" class=" action-btn no-border add-cart-btn">加入购物车</button>
+				<button type="primary" class=" action-btn no-border add-cart-btn" @click="addCart">加入购物车</button>
 			</view>
 		</view>
 
@@ -239,6 +248,14 @@
 		},
 		data() {
 			return {
+				addressData: {
+					id:"",
+					province:"",
+					city:"",
+					area:"",
+					area:"",
+				 
+				},
 				co_id: "", //商家D
 				toogleType: "",
 				shopInfo: {
@@ -254,7 +271,6 @@
 					"thumb": "https://www.i2f2f.com/attachment/images/26/2019/04/giXIQxrG74ZXPnLnnFxnd4Rn0QpCFP.jpg",
 					"thumb_url": "../../images/banner.png,../../images/banner1.png",
 					"is_service": null
-
 				},
 				goodsParam: [{
 						"id": 53,
@@ -270,100 +286,17 @@
 				coupon_list: [],
 				specClass: 'none',
 				specSelected: [],
-
-				favorite: true,
+				favorite: false,
 				shareList: [],
-				imgList: [{
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
-					}
-				],
-				desc: `
-					<div style="width:100%">
-						<img style="width:100%;display:block;" src="https://gd3.alicdn.com/imgextra/i4/479184430/O1CN01nCpuLc1iaz4bcSN17_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd2.alicdn.com/imgextra/i2/479184430/O1CN01gwbN931iaz4TzqzmG_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd3.alicdn.com/imgextra/i3/479184430/O1CN018wVjQh1iaz4aupv1A_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd4.alicdn.com/imgextra/i4/479184430/O1CN01tWg4Us1iaz4auqelt_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd1.alicdn.com/imgextra/i1/479184430/O1CN01Tnm1rU1iaz4aVKcwP_!!479184430.jpg_400x400.jpg" />
-					</div>
-				`,
 				specList: [{
-						id: 1,
-						title: '尺寸',
-						content: [{
-							"id": 28,
-							"name": "白色"
-						}, {
-							"id": 29,
-							"name": "黑色",
-							selected: true
-						}]
-					},
+					id: 1,
+					title: '颜色',
+					content: [{
+						"id": 28,
+						"name": "白色"
+					}]
+				}],
 
-					{
-						id: 2,
-						name: '颜色',
-						content: [{
-							"id": 28,
-							"name": "白色"
-						}, {
-							"id": 29,
-							"name": "黑色"
-						}]
-
-					},
-				],
-				specChildList: [{
-						id: 1,
-						pid: 1,
-						name: 'XS',
-					},
-					{
-						id: 2,
-						pid: 1,
-						name: 'S',
-					},
-					{
-						id: 3,
-						pid: 1,
-						name: 'M',
-					},
-					{
-						id: 4,
-						pid: 1,
-						name: 'L',
-					},
-					{
-						id: 5,
-						pid: 1,
-						name: 'XL',
-					},
-					{
-						id: 6,
-						pid: 1,
-						name: 'XXL',
-					},
-					{
-						id: 7,
-						pid: 2,
-						name: '白色',
-					},
-					{
-						id: 8,
-						pid: 2,
-						name: '珊瑚粉',
-					},
-					{
-						id: 9,
-						pid: 2,
-						name: '草木绿',
-					},
-				]
 			};
 		},
 		async onLoad(options) {
@@ -404,12 +337,22 @@
 				if (goods_spec.data.code == 200) {
 					this.specList = goods_spec.data.data;
 				}
-
-
-
+				
+				const location = await this.$req.ajax({
+					path: 'zdapp/address/get_address_list',
+					title: '正在加载',
+					data: {
+						users_id: "ff8080816a52909d016a533107f40000",
+						page:"1",
+						page_num:"10"
+					}
+				});
+				if (location.data.code == 200) {
+					 console.log(location.data.data.list)
+					 this.addressData=location.data.data.list.filter(item=>item.is_default=='2')[0];
+				}
 			}
 			if (co_id) {
-
 				const coupon_list = await this.$req.ajax({
 					path: 'zdapp/coupon/get_coupon_list',
 					title: '正在加载',
@@ -419,28 +362,20 @@
 				});
 				if (coupon_list.data.code == 200) {
 					console.log(coupon_list.data.data)
-
 					this.coupon_list = coupon_list.data.data;
 				}
-
-
-
-
-
 			}
-
 
 			//规格 默认选中第一条
 			this.specList.forEach(item => {
-				item.content.forEach((citem,index) => {
-					 
-					if (index==0) {
+				item.content.forEach((citem, index) => {
+
+					if (index == 0) {
 						this.$set(citem, "pid", item.id)
 						this.$set(citem, "selected", true)
 						this.specSelected.push(citem);
 					}
 				})
-			
 			})
 			this.shareList = await this.$api.json('shareList');
 		},
@@ -488,13 +423,51 @@
 				this.$refs.share.toggleMask();
 			},
 			//收藏
-			toFavorite() {
+			async toFavorite() {
+				var res = await this.$req.ajax({
+					path: 'zdapp/goods_collection/add_goods_collection',
+					title: '正在加载',
+					data: {
+						goods_id: this.shopInfo.id,
+						users_id: "ff8080816a52909d016a533107f40000",
+						group_id: "2c918aee6a48c1df016a48cdc53a0002"
+					}
+				});
+				if (res.data.code == 200) {
+					// this.$api.msg('请填写收货人姓名');
+				} else {
+					// this.$api.msg('请填写收货人姓名');
+				}
 				this.favorite = !this.favorite;
 			},
 			buy() {
 				uni.navigateTo({
 					url: `/pages/order/createOrder`
 				})
+			},
+			async addCart() {
+				let option_id = this.specSelected.map(item => item.id);
+				let option_idStr = option_id.join(',');
+				console.log(option_idStr);
+				var res = await this.$req.ajax({
+					path: 'zdapp/cart/add_order_info',
+					title: '正在加载',
+					data: {
+						goods_id: this.shopInfo.id,
+						users_id: "ff8080816a52909d016a533107f40000",
+						group_id: "2c918aee6a48c1df016a48cdc53a0002",
+						option_id: option_idStr,
+						address_id: this.addressData.id,
+						number: "1"
+					}
+				});
+				console.log(res)
+				if (res.data.code == 200) {
+					// this.$api.msg('请填写收货人姓名');
+				} else {
+					this.$api.msg(res.data.message);
+				}
+
 			},
 			evaluate() {
 				uni.navigateTo({
@@ -798,12 +771,15 @@
 	.detail-desc {
 		background: #fff;
 		margin-top: 16upx;
-		image{
+
+		image {
 			width: 100%;
 		}
-		.img{
+
+		.img {
 			width: 100%;
 		}
+
 		.d-header {
 			display: flex;
 			justify-content: center;
