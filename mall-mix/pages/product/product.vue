@@ -257,7 +257,7 @@
 		},
 		data() {
 			return {
-				number:"",
+				number:1,
 				addressData: {
 					id:"",
 					province:"",
@@ -454,8 +454,10 @@
 				this.favorite = !this.favorite;
 			},
 			buy() {
+				let option_id = this.specSelected.map(item => item.id);
+				let option_idStr = option_id.join(',');
 				uni.navigateTo({
-					url: `/pages/order/createOrder`
+					url: `/pages/order/createOrder?goods_id=${this.shopInfo.id}&option_id=${option_idStr}&number=${this.number}&address_id=${this.addressData.id}`
 				})
 			},
 			async addCart() {

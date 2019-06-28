@@ -154,10 +154,21 @@
 				}
 			}
 		},
-		onLoad(option){
-			//商品数据
-			//let data = JSON.parse(option.data);
-			//console.log(data);
+		async onLoad(options) {
+			console.log(options)
+			var res = await this.$req.ajax({
+				path: 'zdapp/order_pay/get_order_confirm',
+				title: '正在加载',
+				data: {
+					goods_id: options.goods_id,
+					users_id: "ff8080816a52909d016a533107f40000",
+					group_id: "2c918aee6a48c1df016a48cdc53a0002",
+					option_id:options.option_id,
+					number:options.number,
+					address_id:options.address_id,
+				}
+			});
+			console.log(res)
 		},
 		methods: {
 			//显示优惠券面板
