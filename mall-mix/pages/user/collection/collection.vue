@@ -95,6 +95,7 @@
 		    }, 1000);
 		},
 		onLoad() {
+			// /zdapp/goods_collection/get_collection_List
 			//兼容H5下排序栏位置
 			// #ifdef H5
 				//定时器方式循环获取高度为止，这么写的原因是onLoad中head未必已经渲染出来。
