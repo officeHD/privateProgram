@@ -7,7 +7,8 @@ export default {
 	methods: {
 		...mapMutations(['login'])
 	},
-	onLaunch: function() {
+	onLaunch: function(options) {
+		 
 		let userInfo = uni.getStorageSync('userInfo') || '';
 		if (userInfo.id) {
 			//更新登陆状态
@@ -18,7 +19,7 @@ export default {
 				}
 			});
 		}
-	},
+	}, 
 	onShow: function() {
 		console.log('App Show');
 	},

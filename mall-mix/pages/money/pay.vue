@@ -2,7 +2,7 @@
 	<view class="app">
 		<view class="price-box">
 			<text>支付金额</text>
-			<text class="price">38.88</text>
+			<text class="price">{{pay_price}}</text>
 		</view>
 
 		<view class="pay-type-list">
@@ -50,6 +50,7 @@
 	export default {
 		data() {
 			return {
+				pay_price:"",
 				payType: 1,
 				orderInfo: {}
 			};
@@ -57,8 +58,21 @@
 		computed: {
 		
 		},
-		onLoad(options) {
-			
+		async onLoad(options) {
+			var res = await this.$req.ajax({
+				path: 'zdapp/order_pay/get_order_pay',
+				title: '正在加载',
+				data: {
+					users_id: 'ff8080816a52909d016a533107f40000',
+					co_order_id: options.id
+				 
+				}
+			});
+			if (res.data.code == 200) {
+				 this.out_trade_no=res.data.data.out_trade_no;
+				 this.pay_price=res.data.data.pay_price;
+				 this.create_time=res.data.data.create_time;
+			}
 		},
 
 		methods: {
