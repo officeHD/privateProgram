@@ -94,20 +94,17 @@
 				let res = await this.$req.ajax({
 					path: 'zdapp/cart/get_order_list',
 					title: '正在加载',
-					data:{users_id:"ff8080816a9b6057016aa05476660000",type:"1",page:"1"}
+					data: {
+						users_id: "ff8080816a9b6057016aa05476660000",
+						type: "1",
+						page: "1"
+					}
 				});
 				if (res.statusCode == 200 && res.data.code == 200) {
 					this.cartList = res.data.data.list;
 					// console.log(res.data.data.list)
 				}
-				// console.log(this.cartList)
-				// let list = await this.$api.json('cartList');
-				// let cartList = list.map(item => {
-				// 	item.checked = true;
-				// 	return item;
-				// });
-				// this.cartList = cartList;
-				// this.calcTotal(); //计算总价
+
 			},
 			//监听image加载完成
 			onImageLoad(key, index) {
