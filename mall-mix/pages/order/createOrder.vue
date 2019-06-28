@@ -160,12 +160,15 @@
 				path: 'zdapp/order_pay/get_order_confirm',
 				title: '正在加载',
 				data: {
-					goods_id: options.goods_id,
 					users_id: "ff8080816a52909d016a533107f40000",
-					group_id: "2c918aee6a48c1df016a48cdc53a0002",
+					order_id:"",
+					co_order_id:"",
+					goods_id: options.goods_id,
+					
 					option_id:options.option_id,
 					number:options.number,
 					address_id:options.address_id,
+					is_coupon:""
 				}
 			});
 			console.log(res)
