@@ -8,10 +8,10 @@
 		</view>
 		<view>
 			<scroll-view class="city-item-box" scroll-y="true">
-				<view class="city-item pad-left flex-row" :class="item.value==valueObj[cityList[showRank].identify].value?'active':''"
+				<view class="city-item pad-left flex-row" :class="item.areaCode==valueObj[cityList[showRank].identify].value?'active':''"
 				 v-for="(item,index) in cityList[showRank].showList" :key="index" @click="onChooseClick(item)">
-					<view>{{item.label}}</view>
-					<view v-if="item.value==valueObj[cityList[showRank].identify].value">
+					<view>{{item.areaName}}</view>
+					<view v-if="item.areaCode==valueObj[cityList[showRank].identify].value">
 						<!-- <semp-icon type="gou" color="#0faeff" size="26"></semp-icon> -->
 					</view>
 				</view>
@@ -24,7 +24,6 @@
 </template>
 
 <script>
-	import cityData from '../../common/city.data.js';
 	export default {
 		name: 'sempCity',
 		data() {
@@ -37,7 +36,7 @@
 				cityList: [{
 						identify: 'province',
 						name: '0',
-						showList: cityData[this.platform]
+						showList: this.cityData
 					},
 					{
 						identify: 'city',
@@ -77,31 +76,30 @@
 		},
 		props: {
 			platform: String,
-			default: 'tb'
+			cityData: Array
+
 		},
 		methods: {
 			onChooseClick(item) {
-				if (item.childrens != '' && item.childrens) {
-					this.valueObj[this.cityList[this.showRank].identify].label = item.label;
-					this.valueObj[this.cityList[this.showRank].identify].value = item.value;
-					this.cityList[this.showRank].name = item.label;
+				if (item.childList != '' && item.childList) {
+					this.valueObj[this.cityList[this.showRank].identify].label = item.areaName;
+					this.valueObj[this.cityList[this.showRank].identify].value = item.areaCode;
+					this.cityList[this.showRank].name = item.areaName;
 					this.showRank++;
-					this.cityList[this.showRank].showList = item.childrens;
+					this.cityList[this.showRank].showList = item.childList;
 				} else {
 					this.valueObj.town.label = '';
 					this.valueObj.town.value = '0';
-					this.valueObj[this.cityList[this.showRank].identify].label = item.label;
-					this.valueObj[this.cityList[this.showRank].identify].value = item.value;
+					this.valueObj[this.cityList[this.showRank].identify].label = item.areaName;
+					this.valueObj[this.cityList[this.showRank].identify].value = item.areaCode;
 					this.$emit('confirm', this.valueObj);
 				}
 			},
 			onRankClick(key) {
 				this.showRank = key;
 			},
-		},
-		computed: {
-
 		}
+		 
 
 
 	}
@@ -133,7 +131,7 @@
 	.has-choose {
 		margin-right: 50upx;
 		padding: 0 5upx;
-		
+
 
 	}
 
@@ -149,7 +147,7 @@
 	.city-item {
 		height: 80upx;
 		// border-bottom: 1upx solid #fff;
-		padding:  0  30upx;
+		padding: 0 30upx;
 	}
 
 	.city-item view {
@@ -158,6 +156,6 @@
 
 	.city-item.active {
 		color: #4DA0E0;
-		
+
 	}
 </style>

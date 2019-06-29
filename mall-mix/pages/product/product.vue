@@ -52,9 +52,10 @@
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="c-row b-b mt20" @click="coupon_list.length>0?toggleSpec('Coupon'):null" >
+			<view class="c-row b-b mt20" @click="coupon_list.length>0?toggleSpec('Coupon'):null">
 				<text class="tit">优惠券</text>
-				<text class="con t-r red" v-if="coupon_list.length > 0">领取优惠券</text>
+				<text class="con t-r red" v-if="coupon_list.length > 0">{{coupData.name?coupData.name:"领取优惠券"}}</text>
+
 				<text class="con t-r red" v-if="coupon_list.length == 0">暂无优惠券</text>
 				<text class="yticon icon-you"></text>
 			</view>
@@ -72,7 +73,7 @@
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
-			
+
 			<!-- <view class="c-row b-b">
 				<text class="tit">促销活动</text>
 				<view class="con-list">
@@ -105,12 +106,13 @@
 					<text class="name">{{evaluation.nickname}}</text>
 					<text class="con">{{evaluation.message}}</text>
 					<view class="bot">
-						<text class="attr"><!-- 购买类型：XL 红色 --></text>
+						<text class="attr">
+							<!-- 购买类型：XL 红色 --></text>
 						<text class="time">{{evaluation.create_time}}</text>
 					</view>
 				</view>
 			</view>
-			 
+
 		</view>
 
 		<view class="detail-desc">
@@ -120,10 +122,10 @@
 
 		<!-- 底部操作菜单 -->
 		<view class="page-bottom">
-			<navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
+			<view @click="toShopHome" class="p-b-btn">
 				<text class="yticon icon-xiatubiao--copy"></text>
-				<text>首页</text>
-			</navigator>
+				<text>店铺</text>
+			</view>
 			<navigator url="/pages/cart/cart" open-type="switchTab" class="p-b-btn">
 				<text class="yticon icon-gouwuche"></text>
 				<text>购物车</text>
@@ -134,8 +136,9 @@
 			</view>
 
 			<view class="action-btn-group">
-				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
+
 				<button type="primary" class=" action-btn no-border add-cart-btn" @click="addCart">加入购物车</button>
+				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
 			</view>
 		</view>
 
@@ -156,7 +159,7 @@
 					</view>
 				</view>
 				<view v-for="(item, index) in specList" :key="index" class="attr-list">
-					<text>{{ item.title }}</text>
+					<text class="title">{{ item.title }}</text>
 					<view class="item-list">
 						<text v-for="(childItem, childIndex) in item.content" :key="childIndex" class="tit" :class="{ selected: childItem.selected }"
 						 @click="selectSpec(childIndex, index)">
@@ -164,15 +167,17 @@
 						</text>
 					</view>
 				</view>
-				<view class="attr-list">
-					<text>商品数量</text>
-					<view class="item-list numberAdd">
-						<uni-number-box class="step" :min="1" :max="1000" :value="number" :isMax="number >= item.stock ? true : false"
-						 :isMin="number === 1" @eventChange="numberChange"></uni-number-box>
+				<view class="attr-list row">
+					<text class="title">商品数量</text>
+					<view class=" numberAdd">
+						<uni-number-box class="step" :min="0" :max="stock" :value="number" :disabled="number >= stock ? true : false"
+						 :isMax="number >= stock ? true : false" :isMin="number === 1" @eventChange="numberChange"></uni-number-box>
 					</view>
 				</view>
+				<view>
+					<button class="btn" @click="toggleSpec">完成</button>
+				</view>
 
-				<button class="btn" @click="toggleSpec">完成</button>
 			</view>
 			<view class="layer attr-content " v-if="toogleType == 'Param'">
 				<view class="titleC">产品参数</view>
@@ -187,28 +192,32 @@
 
 				<button class="btn" @click="toggleSpec">关闭</button>
 			</view>
-			<view class="layer attr-content " v-if="toogleType == 'Coupon'">
+			<view class="layer attr-content couponBox" v-if="toogleType == 'Coupon'">
 				<view class="row" v-for="(row, index) in coupon_list" :key="index">
 					<view class="carrier">
 						<view class="left">
 							<view class="title">
-								<text v-if="row.discount_type == 1">{{ row.discount }}折</text>
-								<text v-else>￥{{ row.reduce }}</text>
+
+								<text>￥{{ row.reduce }}</text>
 							</view>
 							<view class="criteria">
 								满{{ row.min_price }}元使用
-								<text>（{{ row.discount_type | couponType }} ）</text>
+								<text>（{{ row.name }} ）</text>
 							</view>
 							<view class="term">{{ row.start_time }} ~ {{ row.end_time }}</view>
 							<view class="gap-top"></view>
 							<view class="gap-bottom"></view>
 						</view>
-						<view class="right">
+						<view class="right" @click="choseCoup(row)">
 							<view class="use">领取</view>
 						</view>
 					</view>
 				</view>
-				<button class="btn" @click="toggleSpec">关闭</button>
+
+				<view class="btnBox">
+					<button class="btn" @click="toggleSpec">关闭</button>
+				</view>
+
 			</view>
 		</view>
 		<!-- 分享 -->
@@ -219,12 +228,16 @@
 <script>
 	import share from '@/components/share';
 	import uniNumberBox from '@/components/uni-number-box.vue';
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		components: {
 			share,
 			uniNumberBox
 		},
 		computed: {
+			...mapState(['hasLogin', 'userInfo']),
 			shopLabel() {
 				let lable = [];
 				if (this.shopInfo.label) {
@@ -240,8 +253,10 @@
 				return lable;
 			}
 		},
+
 		data() {
 			return {
+				coupData: {},
 				stock: 0,
 				evaluation: {},
 				evaluationTotal: 0,
@@ -255,45 +270,39 @@
 					area: ''
 				},
 				co_id: '', //商家D
+				id: "",
 				toogleType: '',
 				shopInfo: {
 					id: 1,
-					title: '毛绒娃娃',
-					subtitle: '儿童玩具',
-					label: '春季新品',
-					postage: '0.00',
-					content: '这里是详情',
-					video: 'http://c_inventory.i2f2f.com/upload/20190419/a4c04fcbb3d8262226b8037df0316ea2.mp4',
-					price: '0.01',
-					old_price: '123.12',
-					thumb: 'https://www.i2f2f.com/attachment/images/26/2019/04/giXIQxrG74ZXPnLnnFxnd4Rn0QpCFP.jpg',
-					thumb_url: '../../images/banner.png,../../images/banner1.png',
-					is_service: null
+					title: '',
+					subtitle: '',
+					label: '',
+					postage: '',
+					content: '',
+					video: '',
+					price: '',
+					old_price: '',
+					thumb: '',
+					thumb_url: '',
+					is_service: ""
 				},
-				goodsParam: [{
-						id: 53,
-						title: '品牌',
-						description: '茵曼'
-					},
-					{
-						id: 54,
-						title: '适用年龄',
-						description: '18-25周岁'
-					}
-				],
-				coupon_list: [],
+				goodsParam: [],
+				coupon_list: [{
+					"id": 22,
+					"name": "购买立减30元",
+					"min_price": 100,
+					"reduce": 30,
+					"limit_type": 1,
+					"start_time": "2018-02-26",
+					"end_time": "2018-10-15",
+					"number": 10,
+					"real_num": 1
+				}],
 				specClass: 'none',
 				specSelected: [],
 				favorite: false,
 				shareList: [],
-				specList: [{
-					id: 1,
-					title: '颜色',
-					content: [{
-						id: 28,
-						name: '白色'
-					}]
-				}]
+				specList: []
 			};
 		},
 		async onLoad(options) {
@@ -301,6 +310,7 @@
 			let id = options.id;
 			let co_id = options.co_id;
 			this.co_id = co_id;
+			this.id = id;
 			if (id) {
 				const res = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_info',
@@ -337,7 +347,7 @@
 					path: 'zdapp/address/get_address_list',
 					title: '正在加载',
 					data: {
-						users_id: 'ff8080816a52909d016a533107f40000',
+						users_id: this.userInfo.id,
 						page: '1',
 						page_num: '10'
 					}
@@ -351,7 +361,8 @@
 					path: 'zdapp/evaluation/get_evaluation_list',
 					title: '正在加载',
 					data: {
-						users_id: 'ff8080816a52909d016a533107f40000',
+						users_id: this.userInfo.id,
+						goods_id: id,
 						page: '1',
 						page_num: '10'
 					}
@@ -373,8 +384,7 @@
 					}
 				});
 				if (coupon_list.data.code == 200) {
-					console.log(coupon_list.data.data);
-					this.coupon_list = coupon_list.data.data;
+					// this.coupon_list = coupon_list.data.data;
 				}
 			}
 
@@ -436,6 +446,9 @@
 			share() {
 				this.$refs.share.toggleMask();
 			},
+			choseCoup(item) {
+				this.coupData = item;
+			},
 			//收藏
 			async toFavorite() {
 				var res = await this.$req.ajax({
@@ -443,7 +456,7 @@
 					title: '正在加载',
 					data: {
 						goods_id: this.shopInfo.id,
-						users_id: 'ff8080816a52909d016a533107f40000',
+						users_id: this.userInfo.id,
 						group_id: '2c918aee6a48c1df016a48cdc53a0002'
 					}
 				});
@@ -482,6 +495,14 @@
 			},
 
 			buy() {
+				if (!this.addressData.id) {
+					this.$api.msg('请选择收货地址');
+					return false;
+				}
+				if (!this.shopOptionId) {
+					this.$api.msg('请选择商品类型');
+					return false;
+				}
 
 				uni.navigateTo({
 					url: `/pages/order/createOrder?goods_id=${this.shopInfo.id}&option_id=${this.shopOptionId}&number=${this.number}&address_id=${this.addressData.id}`
@@ -494,7 +515,7 @@
 					title: '正在加载',
 					data: {
 						goods_id: this.shopInfo.id,
-						users_id: 'ff8080816a52909d016a533107f40000',
+						users_id: this.userInfo.id,
 						group_id: '2c918aee6a48c1df016a48cdc53a0002',
 						option_id: this.shopOptionId,
 						address_id: this.addressData.id,
@@ -509,12 +530,18 @@
 				}
 			},
 			evaluate(num) {
-				if (num == 0) {
-					this.$api.msg('暂无评价');
-					return false;
-				}
+				// if (num == 0) {
+				// 	this.$api.msg('暂无评价');
+				// 	return false;
+				// }
 				uni.navigateTo({
-					url: `/pages/evaluate/evaluate`
+					url: `/pages/evaluate/evaluate?id=${this.id}`
+				});
+			},
+
+			toShopHome() {
+				uni.navigateTo({
+					url: `/pages/business/business?id=${this.co_id}`
 				});
 			},
 
@@ -584,7 +611,7 @@
 			font-size: 36upx;
 			color: #1E1E1E;
 			// height: 84upx;
-			line-height:42upx;
+			line-height: 42upx;
 			margin-top: 20upx;
 		}
 
@@ -617,8 +644,8 @@
 			font-size: $font-sm;
 			color: #E25020;
 			height: 48upx;
-		 
-			border-radius:24upx;
+
+			border-radius: 24upx;
 			border: 2upx solid rgba(240, 176, 176, 1);
 		}
 
@@ -907,6 +934,19 @@
 			color: $font-color-base;
 			padding-top: 30upx;
 			padding-left: 10upx;
+			border-bottom: 2upx solid #E8E8E8;
+
+			&.row {
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.title {
+				color: #1E1E1E;
+				font-size: 30upx;
+			}
+
 		}
 
 		.item-list {
@@ -918,20 +958,22 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				background: #eee;
+				background: #EEEEEE;
 				margin-right: 20upx;
 				margin-bottom: 20upx;
-				border-radius: 100upx;
+				border-radius: 4upx;
 				min-width: 60upx;
 				height: 60upx;
 				padding: 0 20upx;
-				font-size: $font-base;
-				color: $font-color-dark;
+				font-size: 30upx;
+				color: #1E1E1E;
+				min-width: 100upx;
 			}
 
 			.selected {
-				background: #fbebee;
-				color: $uni-color-primary;
+				background: #E2F2FD;
+				color: #177AC6;
+				border: 2upx solid #4C9FE0;
 			}
 		}
 
@@ -997,6 +1039,27 @@
 				text-align: center;
 				padding: 20upx;
 				font-size: 30upx;
+			}
+
+			&.couponBox {
+				padding-bottom: 100upx;
+
+				.btnBox {
+					width: 100%;
+					position: absolute;
+					bottom: 0;
+					left: 0;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					height: 100upx;
+					border-top: 1upx solid #e6e6e6;
+
+					.btn {
+						margin: 0;
+						width: 90%;
+					}
+				}
 			}
 
 			.btn {

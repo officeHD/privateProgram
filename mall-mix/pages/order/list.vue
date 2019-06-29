@@ -21,25 +21,25 @@
 				</view>
 			</view>
 		</view>
-		<view>
-			<view class="listT">
-				<text class="listl">本月</text>
+		<view v-for="(item,index) in listArr" :key="index">
+			<view class="listT" >
+				<text class="listl">{{item.label}}</text>
 				<view class="listR">
 					<text>支出</text>
-					<text class="money">￥126.40</text>
+					<text class="money">{{item.value.total_money}}</text>
 				</view>
 			</view>
-			<view class="listC" v-for="i in 3">
-				<view class="listCl">
-					<text class="listDay">04-03</text>
-					<text  class="listTime">08:45</text>
-				</view>
+			<view class="listC" v-for="(item2,index2) in item.value.list" :key="index2">
+				<!-- <view class="listCl">
+					<text class="listDay"></text>
+					<text class="listTime">{{item2.create_time.split(' ')[1]}}</text>
+				</view> -->
 				<view class="listCR">
 					<view class="cleft">
-						<text class="cTitle">黑色西装裤子女夏季薄款…</text>
-						<text class="cType">服饰美容</text>
+						<text class="cTitle">{{item2.content}}</text>
+						<text class="cType">{{item2.create_time}}</text>
 					</view>
-					<text class="cright">-126.40</text>
+					<text class="cright">{{item2.money}}</text>
 				</view>
 			</view>
 		</view>
@@ -47,18 +47,24 @@
 </template>
 
 <script>
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		data() {
 
 			return {
 				title: 'picker',
-				array: ['服饰美容', '生活日用', '食品', '电器'],
+				array: ['村贝', '现金'],
+				typeArr: ['1', '2'],
 				index: "",
 				date: "",
-				time: '12:01'
+				time: '',
+				listArr:'',
 			}
 		},
 		computed: {
+			...mapState(['hasLogin', 'userInfo']),
 			startDate() {
 				return this.getDate('start');
 			},
@@ -66,13 +72,46 @@
 				return this.getDate('end');
 			}
 		},
+		onShow() {
+			this.loadData();
+
+		},
+
 		methods: {
+			loadData: async function() {
+				const res = await this.$req.ajax({
+					path: 'zdapp/users/get_order_co_list',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						money_type: this.typeArr[this.index],
+						time: this.date
+					}
+				});
+				if (res.data.code == 200) {
+					console.log();
+					let orderList = res.data.data.list;
+					let listArr=[];
+					for (var index in orderList) {
+						listArr[listArr.length]={
+							value:orderList[index],
+							label:index
+						}
+						 
+					}
+					this.listArr=listArr
+					console.log(listArr)
+				}
+			},
 			bindPickerChange: function(e) {
 				console.log('picker发送选择改变，携带值为', e.target.value)
-				this.index = e.target.value
+				this.index = e.target.value;
+				this.loadData()
+
 			},
 			bindDateChange: function(e) {
 				this.date = e.target.value
+				this.loadData()
 			},
 
 			getDate(type) {
@@ -95,17 +134,20 @@
 </script>
 
 <style lang="scss">
-	page, .content{
+	page,
+	.content {
 		background: #f5f5f5;
 		height: 100%;
 	}
+
 	.uni-list-cell {
 		display: flex;
 		font-size: 28upx;
 		height: 88upx;
 		align-items: center;
 		border-bottom: 1upx solid rgba(230, 230, 230, 1);
-		background-color:#fff;
+		background-color: #fff;
+
 		.uni-list-cell-db {
 			padding: 0 32upx;
 
@@ -146,33 +188,39 @@
 			}
 		}
 	}
-	.listC{
+
+	.listC {
 		display: flex;
 		justify-content: space-between;
-		padding:0 ;
+		padding: 0;
 		padding-left: 30upx;
 		height: 138upx;
 		align-items: center;
 		background: #fff;
-		.listCl{
+
+		.listCl {
 			width: 118upx;
 			display: flex;
 			flex-direction: column;
-			.listDay{
-				font-size:28upx; 
+
+			.listDay {
+				font-size: 28upx;
 				color: #333;
 			}
-			.listTime{
-				font-size:24upx; 
+
+			.listTime {
+				font-size: 24upx;
 				color: #999999;
 			}
 		}
-		&:last-child{
-			.listCR{
+
+		&:last-child {
+			.listCR {
 				border-bottom: none;
 			}
 		}
-		.listCR{
+
+		.listCR {
 			flex: 1;
 			height: 100%;
 			display: flex;
@@ -180,19 +228,26 @@
 			justify-content: space-between;
 			align-items: center;
 			border-bottom: 1upx solid rgba(230, 230, 230, 1);
-			.cleft{
+
+			.cleft {
 				display: flex;
 				flex-direction: column;
+				height: 100%;
+				justify-content: center;
 			}
-			.cTitle{
+
+			.cTitle {
 				color: #1E1E1E;
 				font-size: 28upx;
+				margin-bottom: 10upx;
 			}
-			.cType{
-				color:#666666;
+
+			.cType {
+				color: #666666;
 				font-size: 24upx;
 			}
-			.cright{
+
+			.cright {
 				color: #1E1E1E;
 				font-size: 34upx;
 			}

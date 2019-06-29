@@ -1,26 +1,28 @@
 <template>
 	<view class="content">
 		<view class="row b-b">
-			<text class="tit">联系人</text>
+			<text class="tit">收货人</text>
 			<input class="input" type="text" v-model="addressData.name" placeholder="收货人姓名" placeholder-class="placeholder" />
 		</view>
 		<view class="row b-b">
-			<text class="tit">手机号</text>
-			<input class="input" type="number" v-model="addressData.phone" placeholder="收货人手机号码" placeholder-class="placeholder" />
+			<text class="tit">手机号码</text>
+			<input class="input" type="number" maxlength="11" v-model="addressData.phone" placeholder="收货人手机号码"
+			 placeholder-class="placeholder" />
 		</view>
-		<view class="row b-b">
-			<text class="tit">地址</text>
-			<text @click="togglePopup('bottoms')" class="input">
+		<view class="row b-b" @click="togglePopup('bottoms')">
+			<text class="tit">所在地区</text>
+			<text class="input" v-if="addressData.city">
 				{{addressData.province}} {{addressData.city}} {{addressData.area}}
 			</text>
-			<text class="yticon icon-shouhuodizhi"></text>
+			<text class="input c999" v-if="!addressData.city">请选择地址</text>
+			<text class="yticon icon-you"></text>
 		</view>
 		<uni-popup :show="opentype === 'bottoms'" position="bottom" mode="fixed" msg="选择收货地址" @hidePopup="togglePopup('')">
 
-			<semp-city @confirm="onCityClick" platform="jd"></semp-city>
+			<semp-city @confirm="onCityClick" platform="jd" :cityData="cityData"></semp-city>
 		</uni-popup>
 		<view class="row b-b">
-			<text class="tit">门牌号</text>
+			<text class="tit">详细地址</text>
 			<input class="input" type="text" v-model="addressData.address" placeholder="楼号、门牌" placeholder-class="placeholder" />
 		</view>
 
@@ -36,6 +38,9 @@
 <script>
 	import sempCity from "@/components/semp-city/semp-city.vue"
 	import uniPopup from "@/components/uni-popup/uni-popup.vue"
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		components: {
 			sempCity,
@@ -45,18 +50,20 @@
 			return {
 				opentype: "",
 				addressData: {
-
-					"id": 10,
-					"name": "檀-2",
-					"phone": "15145112434",
-					"province": "河北省",
-					"city": "唐山市",
-					"area": "路南区",
-					"address": "黄山路123号",
+					"id": "",
+					"name": "",
+					"phone": "",
+					"province": "",
+					"city": "",
+					"area": "",
+					"address": "",
 					"is_default": 2,
-					"create_time": "2019-04-18 15:09:22"
+					"create_time": ""
 				}
 			}
+		},
+		computed: {
+			...mapState(['hasLogin', 'userInfo', 'cityData'])
 		},
 		onLoad(option) {
 			let title = '新增收货地址';
@@ -69,16 +76,18 @@
 			uni.setNavigationBarTitle({
 				title
 			})
+			console.log(this.cityData)
 		},
 		methods: {
 			switchChange(e) {
 				this.addressData.is_default = e.detail ? "2" : "1";
 			},
 			onCityClick(e) {
-				this.provinceName = e.province.label;
-				this.cityName = e.city.label;
-				this.countyName = e.county.label;
-				this.townName = e.town.label;
+				console.log(e)
+				this.addressData.province = e.province.label;
+				this.addressData.city = e.city.label;
+				this.addressData.area = e.county.label;
+
 				this.addressData.addressName = e.province.label + " " + e.city.label + " " + e.county.label + " " + e.town.label
 				this.togglePopup("")
 			},
@@ -87,14 +96,14 @@
 				this.opentype = type;
 			},
 			//地图选择地址
-			chooseLocation() {
-				uni.chooseLocation({
-					success: (data) => {
-						this.addressData.addressName = data.name;
-						this.addressData.address = data.name;
-					}
-				})
-			},
+			// chooseLocation() {
+			// 	uni.chooseLocation({
+			// 		success: (data) => {
+			// 			this.addressData.addressName = data.name;
+			// 			this.addressData.address = data.name;
+			// 		}
+			// 	})
+			// },
 
 			//提交
 			confirm() {
@@ -115,22 +124,27 @@
 					this.$api.msg('请填写门牌号信息');
 					return;
 				}
+				let url = "zdapp/address/add_address_info";
+				let senddata = {
+					users_id: this.userInfo.id,
+					"name": data.name,
+					"phone": data.phone,
+					"province": data.province,
+					"city": data.city,
+					"area": data.area,
+					"address": data.address,
+					"is_default": data.is_default
+				}
+				if (data.id) {
+					url = "zdapp/address/edit_address_info";
+					this.$set(senddata, 'id', data.id)
+				}
 				this.$req.ajax({
-					path: 'zdapp/address/edit_address_info',
+					path: url,
 					title: '正在加载',
-					data: {
-						users_id: "ff8080816a52909d016a533107f40000",
-						"id": data.id,
-						"name": data.name,
-						"phone": data.phone,
-						"province": data.province,
-						"city": data.city,
-						"area": data.area,
-						"address": data.address,
-						"is_default": data.is_default
-					},
+					data: senddata,
 					finshFun: function(res) {
-						 
+
 					}
 
 				});
@@ -171,6 +185,10 @@
 			flex: 1;
 			font-size: 30upx;
 			color: $font-color-dark;
+
+			&.c999 {
+				color: #999;
+			}
 		}
 
 		.icon-shouhuodizhi {

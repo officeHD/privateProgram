@@ -1,23 +1,11 @@
 <template>
 	<view class="uni-numbox">
-		<view class="uni-numbox-minus" 
-			@click="_calcValue('subtract')"
-		>
-			<text class="yticon icon--jianhao" :class="minDisabled?'uni-numbox-disabled': ''" ></text>
+		<view class="uni-numbox-minus" @click="_calcValue('subtract')">
+			<text class="yticon icon--jianhao" :class="minDisabled?'uni-numbox-disabled': ''"></text>
 		</view>
-		<input 
-			class="uni-numbox-value" 
-			type="number" 
-			:disabled="disabled"
-			:value="inputValue" 
-			
-			@blur="_onBlur"
-		>
-		<view 
-			class="uni-numbox-plus" 
-			@click="_calcValue('add')"
-		>
-			<text class="yticon icon-jia2" :class="maxDisabled?'uni-numbox-disabled': ''" ></text>
+		<input class="uni-numbox-value" type="number" :disabled="disabled" :value="inputValue" @blur="_onBlur">
+		<view class="uni-numbox-plus" @click="_calcValue('add')">
+			<text class="yticon icon-jia2" :class="maxDisabled?'uni-numbox-disabled': ''"></text>
 		</view>
 	</view>
 </template>
@@ -65,9 +53,12 @@
 				maxDisabled: false
 			}
 		},
-		created(){
+		created() {
 			this.maxDisabled = this.isMax;
 			this.minDisabled = this.isMin;
+			if(this.max==0){
+				this.inputValue=0;
+			}
 		},
 		computed: {
 
@@ -87,31 +78,31 @@
 				let value = this.inputValue * scale;
 				let newValue = 0;
 				let step = this.step * scale;
-				
-				if(type === 'subtract'){
+
+				if (type === 'subtract') {
 					newValue = value - step;
-					if (newValue <= this.min){
+					if (newValue <= this.min) {
 						this.minDisabled = true;
 					}
-					if(newValue < this.min){
+					if (newValue < this.min) {
 						newValue = this.min
 					}
-					if(newValue < this.max && this.maxDisabled === true){
+					if (newValue < this.max && this.maxDisabled === true) {
 						this.maxDisabled = false;
 					}
-				}else if(type === 'add'){
+				} else if (type === 'add') {
 					newValue = value + step;
-					if (newValue >= this.max){
+					if (newValue >= this.max) {
 						this.maxDisabled = true;
 					}
-					if(newValue > this.max){
+					if (newValue > this.max) {
 						newValue = this.max
 					}
-					if(newValue > this.min && this.minDisabled === true){
+					if (newValue > this.min && this.minDisabled === true) {
 						this.minDisabled = false;
 					}
 				}
-				if(newValue === value){
+				if (newValue === value) {
 					return;
 				}
 				this.inputValue = newValue / scale;
@@ -144,15 +135,13 @@
 </script>
 <style>
 	.uni-numbox {
-		position:absolute;
-		left: 30upx;
-		bottom: 0;
+		 
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
-		width:230upx;
+		/* width: 230upx; */
 		height: 70upx;
-		background:#f5f5f5;
+		background: trasmparent;
 	}
 
 	.uni-numbox-minus,
@@ -160,27 +149,26 @@
 		margin: 0;
 		background-color: #f5f5f5;
 		width: 70upx;
-		height: 100%;
+		height: 70upx;
 		line-height: 70upx;
 		text-align: center;
-		position: relative;
+		 
+		border-radius: 50%;
+		overflow: hidden;;
 	}
+
 	.uni-numbox-minus .yticon,
-	.uni-numbox-plus .yticon{
+	.uni-numbox-plus .yticon {
 		font-size: 36upx;
 		color: #555;
 	}
 
 	.uni-numbox-minus {
-		border-right: none;
-		border-top-left-radius: 6upx;
-		border-bottom-left-radius: 6upx;
+		 
 	}
 
 	.uni-numbox-plus {
-		border-left: none;
-		border-top-right-radius: 6upx;
-		border-bottom-right-radius: 6upx;
+	 
 	}
 
 	.uni-numbox-value {
@@ -191,6 +179,8 @@
 		text-align: center;
 		padding: 0;
 		font-size: 30upx;
+		margin-left: 10upx;
+		margin-right: 10upx;
 	}
 
 	.uni-numbox-disabled.yticon {

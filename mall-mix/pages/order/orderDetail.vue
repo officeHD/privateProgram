@@ -14,17 +14,15 @@
 		<!-- 地址 -->
 		<view class="address-section">
 			<view class="order-content bb" v-if="maskState == 2">
-				 <text class="location">{{addressData.address}} {{addressData.area}}</text>
-					 
-			 
+				<text class="location">{{addressData.province}} {{addressData.city}} {{addressData.area}} {{addressData.address}}</text>
 				<text class="mobile">2019-3-14 5:20</text>
 			</view>
 			<view class="order-content">
 				<view class="top">
 					<text class="name">{{addressData.name}}</text>
-					<text class="mobile">{{addressData.mobile}}</text>
+					<text class="mobile">{{addressData.phone}}</text>
 				</view>
-				<text class="address">{{addressData.address}} {{addressData.area}}</text>
+				<text class="address">{{addressData.province}} {{addressData.city}} {{addressData.area}} {{addressData.address}}</text>
 			</view>
 
 		</view>
@@ -35,45 +33,39 @@
 				<text class="name">西城小店铺</text>
 			</view>
 			<!-- 商品列表 -->
-			<view class="g-item">
-				<image src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=756705744,3505936868&fm=11&gp=0.jpg"></image>
+			<view class="g-item" v-for="(item,index) in orderList" :key="index">
+				<image :src="item.thumb"></image>
 				<view class="right">
-					<text class="title clamp">古黛妃 短袖t恤女夏装2019新款</text>
-					<text class="spec">春装款 L</text>
+					<text class="title clamp">{{item.title}}</text>
+					<text class="spec"><!-- 春装款 L --></text>
 					<view class="price-box">
-						<text class="price">￥17.8</text>
-						<text class="number">x 1</text>
+						<text class="price">￥{{item.price}}</text>
+						<text class="number">x {{item.number}}</text>
 					</view>
 				</view>
 			</view>
-			<view class="g-item ">
-				<image src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1620020012,789258862&fm=26&gp=0.jpg"></image>
-				<view class="right">
-					<text class="title clamp">韩版于是洞洞拖鞋 夏季浴室防滑简约居家【新人专享，限选意见】</text>
-					<text class="spec">春装款 L</text>
-					<view class="price-box">
-						<text class="price">￥17.8</text>
-						<text class="number">x 1</text>
-					</view>
-				</view>
-			</view>
+			 
 			<!-- 金额明细 -->
 			<view class="yt-list">
 				<view class="yt-list-cell  ">
 					<text class="cell-tit clamp">商品金额</text>
-					<text class="cell-tip">￥179.88</text>
+					<text class="cell-tip">￥{{orderTotal.pay_price}}</text>
 				</view>
 				<view class="yt-list-cell ">
 					<text class="cell-tit clamp">优惠金额</text>
-					<text class="cell-tip ">-￥35</text>
+					<text class="cell-tip ">-￥{{orderTotal.coupon_price}}</text>
+				</view>
+				<view class="yt-list-cell ">
+					<text class="cell-tit clamp">减免金额</text>
+					<text class="cell-tip ">-￥{{orderTotal.reduce_price}}</text>
 				</view>
 				<view class="yt-list-cell ">
 					<text class="cell-tit clamp">运费</text>
-					<text class="cell-tip">免运费</text>
+					<text class="cell-tip">{{orderTotal.total_postage}}</text>
 				</view>
 				<view class="yt-list-cell  ">
 					<text class="cell-tit clamp">需付款</text>
-					<text class="cell-tip red">￥33.0</text>
+					<text class="cell-tip red">￥{{orderTotal.pay_price}}</text>
 				</view>
 			</view>
 		</view>
@@ -104,44 +96,48 @@
 </template>
 
 <script>
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		data() {
 			return {
 				maskState: 0, //优惠券面板显示状态
 				desc: '', //备注
 				payType: 1, //1微信 2支付宝
-				couponList: [{
-						title: '新用户专享优惠券',
-						price: 5,
-					},
-					{
-						title: '庆五一发一波优惠券',
-						price: 10,
-					},
-					{
-						title: '优惠券优惠券优惠券优惠券',
-						price: 15,
-					}
-				],
-				addressData: {
-					name: '许小星',
-					mobile: '13853989563',
-					addressName: '金九大道',
-					address: '山东省济南市历城区',
-					area: '149号',
-					default: false,
-				}
+				orderTotal: {},
+				addressData: { },
+				orderList:[]
 			}
 		},
-		onLoad(option) {
+		computed: {
+			...mapState(['hasLogin', 'userInfo'])
+		},
+		async onLoad(option) {
 			//商品数据
-			let id = JSON.parse(option.id);
-			this.maskState=id;
+			let id = option.id;
+			this.maskState = id;
+			var res = await this.$req.ajax({
+				path: 'zdapp/order_pay/get_order_confirm',
+				title: '正在加载',
+				data: {
+					users_id: this.userInfo.id,
+					co_order_id: id,
+
+				}
+			});
+			
+			if (res.data.code == 200) {
+				this.addressData = res.data.data.address;
+				this.orderTotal = res.data.data.total;
+				this.orderList = res.data.data.list;  
+			}
+			
+			
+			
+			
 		},
 		methods: {
-		 
-			 
-			 
 			submit() {
 				uni.redirectTo({
 					url: '/pages/money/pay'
@@ -159,8 +155,8 @@
 	}
 
 	.user-section {
-		height: 228upx;
-		padding: 105upx 30upx 0;
+		// height: 228upx;
+		padding: 30upx 30upx;
 		position: relative;
 		background: linear-gradient(to right, #6ab0e6, #4b9fe0);
 		display: flex;
@@ -181,13 +177,14 @@
 
 	.address-section {
 		margin: 20upx 0;
-		padding:10upx 0 10upx 30upx;
+		padding: 10upx 0 10upx 30upx;
 		min-height: 130upx;
 		background: #fff;
 		position: relative;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+
 		.order-content {
 			display: flex;
 			align-items: flex-start;
@@ -195,12 +192,14 @@
 			font-size: 28upx;
 			color: $font-color-dark;
 			padding: 5px 0;
-			&.bb{
+
+			&.bb {
 				border-bottom: 1px solid #e6e6e6;
 			}
 
 		}
-		.location{
+
+		.location {
 			font-size: 28upx;
 			color: #298BD9;
 			margin-bottom: 10upx;

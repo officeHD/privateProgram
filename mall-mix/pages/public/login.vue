@@ -14,7 +14,7 @@
 					<input type="number" :value="mobile" placeholder="请输入手机号码" maxlength="11" data-key="mobile" @input="inputChange" />
 				</view>
 				<view class="input-item">
-					<input type="mobile" value="" placeholder="请输入验证码" placeholder-class="input-empty" maxlength="20" password
+					<input type="mobile" value="" placeholder="请输入验证码" placeholder-class="input-empty" maxlength="6" password
 					 data-key="password" @input="inputChange" />
 					<view class="zai-checking" @click="checking" v-if="state===false">获取验证码</view>
 					<view class="zai-checking zai-time" v-if="state===true">倒计时{{ currentTime }}s</view>

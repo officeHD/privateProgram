@@ -28,6 +28,14 @@
 				"navigationBarTitleText": "设置"
 			}
 		},
+		{
+		    "path" : "pages/product/goods-list",
+		    "style" : {
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 50
+			}
+		},
 
 		{
 			"path": "pages/user/userinfo/userinfo",
@@ -94,19 +102,11 @@
 
 			"path": "pages/order/orderDetail",
 			"style": {
-				"navigationBarTitleText": "订单详情",
+				"navigationBarTitleText": "订单详情"
 				// #ifdef MP
-				"navigationStyle": "custom",
+				 
 				// #endif
-				"app-plus": {
-					"bounce": "none",
-					"titleNView": {
-						"type": "transparent",
-						"titleText": "订单详情",
-						"titleColor": "#fff"
-
-					}
-				}
+				 
 			}
 		},
 		{
@@ -185,7 +185,13 @@
 				"navigationBarTitleText": "评价"
 			}
 		}
-	],
+	    ,{
+            "path" : "pages/business/business",
+            "style": {
+            	"navigationBarTitleText": "店铺详情"
+            }
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

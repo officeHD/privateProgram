@@ -35,7 +35,7 @@
 
 						<view class="action-box b-t" v-if="item.type == 2">
 							<button class="action-btn" @click="cancelOrder(item)">取消订单</button>
-							<button class="action-btn recom">立即支付</button>
+							<button class="action-btn recom" @click="payOrder(item)">立即支付</button>
 						</view>
 					</view>
 
@@ -50,10 +50,16 @@
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from '@/components/empty';
 	import Json from '@/Json';
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		components: {
 			uniLoadMore,
 			empty
+		},
+		computed: {
+			...mapState(['hasLogin', 'userInfo'])
 		},
 		data() {
 			return {
@@ -112,7 +118,7 @@
 		methods: {
 			//
 			navToDetail(item) {
-				let id = item.state;
+				let id = item.id;
 				uni.navigateTo({
 					url: `/pages/order/orderDetail?id=${id}`
 				});
@@ -141,7 +147,7 @@
 					path: 'zdapp/order/get_order_co_list',
 					title: '正在加载',
 					data: {
-						users_id: 'ff8080816a52909d016a533107f40000',
+						users_id: this.userInfo.id,
 						type: type,
 						type_2: type_2,
 						page: this.page
@@ -169,6 +175,11 @@
 			tabClick(index) {
 				this.tabCurrentIndex = index;
 			},
+			payOrder(item) {
+				uni.redirectTo({
+					url: `/pages/money/pay?id=${item.id}`
+				});
+			},
 			//删除订单
 			deleteOrder(index) {
 				uni.showLoading({
@@ -185,20 +196,16 @@
 					path: 'zdapp/order/del_order_co ',
 					title: '正在加载',
 					data: {
-						users_id: 'ff8080816a52909d016a533107f40000',
+						users_id: this.userInfo.id,
 						co_order_id: item.id,
-
 					}
 				});
 				if (resData.data.code == 200) {
 					let list = this.navList[1].orderList;
 					let index = list.findIndex(val => val.id === item.id);
 					index !== -1 && list.splice(index, 1);
-					this.navList[1].orderList=list
+					this.navList[1].orderList = list
 				}
-
-
-
 			},
 
 			//订单状态文字和颜色

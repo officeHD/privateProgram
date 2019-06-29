@@ -72,6 +72,7 @@ class Request {
 	 * 基本ajax请求
 	 */
 	ajax({
+		fullurl="", //全路径
 		path = '', //请求路径
 		title = false, //请求头部 默认为false不显示, 传入字符串则显示 推荐7个字内
 		header = this.defaultReq.header, //请求header 默认为"application/x-www-form-urlencoded"
@@ -93,7 +94,7 @@ class Request {
 				};
 			}
 			let beforeInfo = {
-				url: this.defaultReq.url + path,
+				url: fullurl ? fullurl : this.defaultReq.url + path,
 				method: type,
 				dataType,
 				responseType,

@@ -2,37 +2,35 @@
 	<view class="container">
 		<view class="user-section">
 			<!-- <image class="bg" src="/static/user-bg.jpg"></image> -->
-
-
 		</view>
-		<view class="vip-card-box"   >
+		<view class="vip-card-box">
 			<!-- <image class="card-bg" src="/static/vip-card-bg.png" mode=""></image> -->
-			<view class="user-info-box"  @click="navTo('/pages/user/userinfo/userinfo?state=1')">
+			<view class="user-info-box" >
 				<view class="user-info-box-l">
 					<view class="portrait-box">
-						<image class="portrait" :src="userInfo.headimgurl || '/static/missing-face.png'"></image>
+						<image class="portrait" :src="userData.headimgurl || '/static/missing-face.png'"></image>
 					</view>
 					<view class="info-box">
-						<text class="username ml20 f28 c3">{{ userInfo.nickname || '游客' }}</text>
-						<text class="userphone ml20 c6 f24">{{ userInfo.phone_number || '13262626262' }}</text>
+						<text class="username ml20 f28 c3">{{ userData.nickname || '游客' }}</text>
+						<text class="userphone ml20 c6 f24">{{ userData.phone_number || '' }}</text>
 					</view>
 				</view>
 
-				<text class="f28 ml10 yticon icon-you c6"></text>
+				<!-- <text class="f28 ml10 yticon icon-you c6"></text> -->
 			</view>
 			<view class="account">
 				<view class="tj-item br">
 					<text class="f24 c6">余额：</text>
-					<text class="num f24 c6">￥{{userInfo.balance}}</text>
+					<text class="num f24 c6">￥{{userData.balance||0}}</text>
 
 				</view>
 				<view class="tj-item">
 					<text class="f24 c6">可用村贝：</text>
-					<text class="num f24 c6">{{userInfo.group_cowry}}</text>
+					<text class="num f24 c6">{{userData.group_cowry||0}}</text>
 				</view>
 			</view>
-		 
-			<view class="searchList"  @click="navTo('/pages/order/list')">
+
+			<view class="searchList" @click="navTo('/pages/order/list')">
 				<text class="f24">账单查询</text>
 			</view>
 
@@ -99,7 +97,8 @@
 				</view>
 			</view>
 			<view class="order-section">
-				<view class="order-item" @click="navTo('/pages/user/collection/collection?state=1')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/user/collection/collection?state=1')" hover-class="common-hover"
+				 :hover-stay-time="50">
 					<text class="yticon icon-daifukuan"></text>
 					<text>收藏夹</text>
 				</view>
@@ -116,7 +115,8 @@
 					<text class="yticon icon-yishouhuo"></text>
 					<text>会员卡</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/user/keep/keep?state=4')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/user/keep/keep?state=4')" hover-class="common-hover"
+				 :hover-stay-time="50">
 					<text class="yticon icon-shouhoutuikuan"></text>
 					<text>我的推荐</text>
 				</view>
@@ -165,16 +165,19 @@
 		},
 		data() {
 			return {
-				userInfo:{
-					
+				userData: {
+
 				},
 				coverTransform: 'translateY(0px)',
 				coverTransition: '0s',
 				moving: false
 			};
 		},
-		onLoad() {
-			this.loadData();
+		onShow() {
+			if(this.hasLogin){
+				this.loadData();
+			}
+			
 		},
 		// #ifndef MP
 		onNavigationBarButtonTap(e) {
@@ -197,22 +200,23 @@
 		},
 		// #endif
 		computed: {
-			...mapState(['hasLogin'])
+			...mapState(['hasLogin','userInfo'])
 		},
 		methods: {
 			async loadData() {
 				const res = await this.$req.ajax({
 					path: 'zdapp/users/get_users_info',
-					title: '正在加载',
+					// title: '正在加载',
 					data: {
-						users_id: "ff8080816a52909d016a533107f40000"
+						users_id: this.userInfo.id
 					}
 				});
 				if (res.data.code == 200) {
-					 console.log(res.data.data)
-					 this.userInfo=res.data.data;
+					console.log(res.data.data)
+					this.userData = res.data.data;
+					
 				}
-			 
+
 			},
 			/**
 			 * 统一跳转接口,拦截未登录路由

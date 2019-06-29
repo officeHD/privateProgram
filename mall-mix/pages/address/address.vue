@@ -16,12 +16,16 @@
 		<!-- <text style="display:block;padding: 16upx 30upx 10upx;lihe-height: 1.6;color: #fa436a;font-size: 24upx;">
 			重要：添加和修改地址回调仅增加了一条数据做演示，实际开发中将回调改为请求后端接口刷新一下列表即可
 		</text> -->
-		
+
 		<button class="add-btn" @click="addAddress('add')">新增地址</button>
 	</view>
 </template>
 
 <script>
+	import {
+		mapState,
+		mapMutations
+	} from 'vuex';
 	export default {
 		data() {
 			return {
@@ -29,76 +33,123 @@
 				addressList: []
 			}
 		},
-		onLoad(option){
-			console.log(option.source);
+		onLoad(option) {
+			// console.log(option.source);
 			this.loadData();
 			this.source = option.source;
-			
+
+		},
+		computed: {
+			...mapState(['hasLogin', 'userInfo', 'cityData'])
+		},
+		onShow() {
+			console.log(this.cityData)
+			if (this.cityData && this.cityData.length == 0) {
+				this.loadAddress()
+			}
 		},
 		methods: {
+			...mapMutations(['setCityData']),
 			async loadData() {
 				const res = await this.$req.ajax({
 					path: 'zdapp/address/get_address_list',
 					title: '正在加载',
 					data: {
-						users_id: "ff8080816a52909d016a533107f40000",
-						page:"1",
-						page_num:"10"
+						users_id: this.userInfo.id,
+						page: "1",
+						page_num: "10"
 					}
 				});
 				if (res.data.code == 200) {
-					 console.log(res.data.data.list)
-					 this.addressList=res.data.data.list;
+					// console.log(res.data.data.list)
+					this.addressList = res.data.data.list;
 				}
-			 
+
+			},
+			async loadAddress() {
+				const res = await this.$req.ajax({
+					fullurl: 'https://pg.i2f2f.com/home/system/area_custom_list',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						page: "1",
+						page_num: "10"
+					}
+				});
+				if (res.data.code == 200) {
+					// console.log(res.data.data.list)
+					// this.addressList = res.data.data.list;
+					this.setCityData(res.data.data)
+				}
 			},
 			//选择地址
-			checkAddress(item){
-				if(this.source == 1){
+			checkAddress(item) {
+				if (this.source == 1) {
 					//this.$api.prePage()获取上一页实例，在App.vue定义
 					this.$api.prePage().addressData = item;
 					uni.navigateBack()
 				}
 			},
-			addAddress(type, item){
+			addAddress(type, item) {
 				uni.navigateTo({
 					url: `/pages/address/addressManage?type=${type}&data=${JSON.stringify(item)}`
 				})
 			},
 			//添加或修改成功之后回调
-			refreshList(data, type){
+			refreshList(data, type) {
 				//添加或修改后事件，这里直接在最前面添加了一条数据，实际应用中直接刷新地址列表即可
-				this.addressList.unshift(data);
+				// 
+				let that=this;
+				// if (type == "edit") {
+				// 	this.addressList.map(item => {
+				// 		if (item.id == data.id) {
+				// 			item = data
+				// 		}
+				// 	})
+				// } else {
+				// 	this.addressList.unshift(data);
+				// }
+				// 
+				setTimeout(function() {
+					that.loadData()
+				}, 500);
 				
-				console.log(data, type);
+
+				// console.log(data, type);
 			}
 		}
 	}
 </script>
 
 <style lang='scss'>
-	page{
+	page {
 		padding-bottom: 120upx;
 	}
-	.content{
+
+	.content {
 		position: relative;
 	}
-	.list{
+
+	.list {
 		display: flex;
 		align-items: center;
-		padding: 20upx 30upx;;
+		padding: 20upx 30upx;
+		;
 		background: #fff;
 		position: relative;
 	}
-	.wrapper{
+
+	.wrapper {
 		display: flex;
 		flex-direction: column;
 		flex: 1;
 	}
-	.address-box{
+
+	.address-box {
 		display: flex;
 		align-items: center;
-		.tag{
+
+		.tag {
 			font-size: 24upx;
 			color: $base-color;
 			margin-right: 10upx;
@@ -108,20 +159,24 @@
 			padding: 4upx 10upx;
 			line-height: 1;
 		}
-		.address{
+
+		.address {
 			font-size: 30upx;
 			color: $font-color-dark;
 		}
 	}
-	.u-box{
+
+	.u-box {
 		font-size: 28upx;
 		color: $font-color-light;
 		margin-top: 16upx;
-		.name{
+
+		.name {
 			margin-right: 30upx;
 		}
 	}
-	.icon-bianji{
+
+	.icon-bianji {
 		display: flex;
 		align-items: center;
 		height: 80upx;
@@ -129,8 +184,8 @@
 		color: $font-color-light;
 		padding-left: 30upx;
 	}
-	
-	.add-btn{
+
+	.add-btn {
 		position: fixed;
 		left: 30upx;
 		right: 30upx;
@@ -145,6 +200,6 @@
 		color: #fff;
 		background-color: $base-color;
 		border-radius: 10upx;
-		box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);		
+		box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
 	}
 </style>
