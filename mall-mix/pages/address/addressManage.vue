@@ -39,7 +39,8 @@
 	import sempCity from "@/components/semp-city/semp-city.vue"
 	import uniPopup from "@/components/uni-popup/uni-popup.vue"
 	import {
-		mapState
+		mapState,
+		mapMutations
 	} from 'vuex';
 	export default {
 		components: {
@@ -76,11 +77,30 @@
 			uni.setNavigationBarTitle({
 				title
 			})
-			console.log(this.cityData)
+			if (this.cityData && this.cityData.length == 0) {
+				this.loadAddress()
+			}
 		},
 		methods: {
+			...mapMutations(['setCityData']),
 			switchChange(e) {
 				this.addressData.is_default = e.detail ? "2" : "1";
+			},
+			async loadAddress() {
+				const res = await this.$req.ajax({
+					fullurl: 'https://pg.i2f2f.com/home/system/area_custom_list',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						page: "1",
+						page_num: "10"
+					}
+				});
+				if (res.data.code == 200) {
+					// console.log(res.data.data.list)
+					// this.addressList = res.data.data.list;
+					this.setCityData(res.data.data)
+				}
 			},
 			onCityClick(e) {
 				console.log(e)

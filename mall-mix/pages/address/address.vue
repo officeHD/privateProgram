@@ -35,15 +35,14 @@
 		},
 		onLoad(option) {
 			// console.log(option.source);
-			this.loadData();
+			
 			this.source = option.source;
-
+			this.loadData();
 		},
 		computed: {
 			...mapState(['hasLogin', 'userInfo', 'cityData'])
 		},
 		onShow() {
-			console.log(this.cityData)
 			if (this.cityData && this.cityData.length == 0) {
 				this.loadAddress()
 			}
@@ -62,7 +61,7 @@
 				});
 				if (res.data.code == 200) {
 					// console.log(res.data.data.list)
-					this.addressList = res.data.data.list;
+					this.addressList = res.data.data.list;  
 				}
 
 			},

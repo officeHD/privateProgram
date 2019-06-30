@@ -108,7 +108,16 @@
 				// #endif
 				 
 			}
+		},{
+
+			"path": "pages/order/received",
+			"style": {
+				"navigationBarTitleText": "订单详情"
+				 
+			}
 		},
+		
+		
 		{
 			"path": "pages/coupon/coupon",
 			"style": {

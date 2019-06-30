@@ -49,6 +49,7 @@ class UpFiles extends RQ {
 							mask: true,
 						});
 					}
+					let upresAr=[];
 					for (let i = 0; i < res.length; i++) {
 						if (showProgress) {
 							title = `${(i+1)}/${res.length}`
@@ -61,12 +62,13 @@ class UpFiles extends RQ {
 							fileName,
 							extra: extra
 						});
+						upresAr[upresAr.length]=upres.data
 					}
 					if (title) {
 						uni.hideLoading();
 					}
 					resolve({
-						upload: true
+						upload: upresAr
 					});
 				}
 				return resolve(res);

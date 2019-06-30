@@ -2,27 +2,32 @@
 	<view>
 		<view class="user-section">
 			<text class="top-title" v-if="maskState == 1">订单待付款</text>
-			<text class="top-title" v-if="maskState == 2">已付款</text>
-			<text class="top-title" v-if="maskState == 3">订单待收货</text>
-			<text class="top-title" v-if="maskState == 4">订单已完成</text>
 			<text class="top-con" v-if="maskState == 1">剩余24小时32分钟自动关闭</text>
+
+			<text class="top-title" v-if="maskState == 2">已付款</text>
 			<text class="top-con" v-if="maskState == 2">等待商家发货</text>
+
+			<text class="top-title" v-if="maskState == 3">订单待收货</text>
 			<text class="top-con" v-if="maskState == 3">等待收货</text>
-			<text class="top-con" v-if="maskState == 4">去评价</text>
+			<block v-if="maskState == 4">
+				<text class="top-title">订单已完成</text>
+				<text class="top-con">去评价</text>
+			</block>
+
 		</view>
 
 		<!-- 地址 -->
 		<view class="address-section">
-			<view class="order-content bb" v-if="maskState == 2">
-				<text class="location">{{addressData.province}} {{addressData.city}} {{addressData.area}} {{addressData.address}}</text>
+			<view class="order-content bb" v-if="maskState == 3">
+				<text class="location">{{address}}</text>
 				<text class="mobile">2019-3-14 5:20</text>
 			</view>
 			<view class="order-content">
 				<view class="top">
-					<text class="name">{{addressData.name}}</text>
-					<text class="mobile">{{addressData.phone}}</text>
+					<text class="name">{{name}}</text>
+					<text class="mobile">{{phone}}</text>
 				</view>
-				<text class="address">{{addressData.province}} {{addressData.city}} {{addressData.area}} {{addressData.address}}</text>
+				<text class="address">{{address}}</text>
 			</view>
 
 		</view>
@@ -30,42 +35,53 @@
 		<view class="goods-section">
 			<view class="g-header b-b">
 				<image class="logo" src="http://duoduo.qibukj.cn/./Upload/Images/20190321/201903211727515.png"></image>
-				<text class="name">西城小店铺</text>
+				<text class="name">{{co_name}}</text>
 			</view>
 			<!-- 商品列表 -->
 			<view class="g-item" v-for="(item,index) in orderList" :key="index">
 				<image :src="item.thumb"></image>
 				<view class="right">
 					<text class="title clamp">{{item.title}}</text>
-					<text class="spec"><!-- 春装款 L --></text>
+					<text class="spec">
+						<!-- 春装款 L --></text>
 					<view class="price-box">
 						<text class="price">￥{{item.price}}</text>
 						<text class="number">x {{item.number}}</text>
 					</view>
+					<view class="" v-if="maskState==3">
+						申请退换
+					</view>
 				</view>
 			</view>
-			 
+
 			<!-- 金额明细 -->
 			<view class="yt-list">
 				<view class="yt-list-cell  ">
 					<text class="cell-tit clamp">商品金额</text>
-					<text class="cell-tip">￥{{orderTotal.pay_price}}</text>
+					<text class="cell-tip">￥{{total_price}}</text>
 				</view>
 				<view class="yt-list-cell ">
 					<text class="cell-tit clamp">优惠金额</text>
-					<text class="cell-tip ">-￥{{orderTotal.coupon_price}}</text>
+					<text class="cell-tip ">-￥{{coupon_price}}</text>
 				</view>
 				<view class="yt-list-cell ">
 					<text class="cell-tit clamp">减免金额</text>
-					<text class="cell-tip ">-￥{{orderTotal.reduce_price}}</text>
+					<text class="cell-tip ">-￥{{reduce_price}}</text>
 				</view>
 				<view class="yt-list-cell ">
-					<text class="cell-tit clamp">运费</text>
-					<text class="cell-tip">{{orderTotal.total_postage}}</text>
+					<text class="cell-tit clamp">村贝抵扣</text>
+					<text class="cell-tip ">-￥{{integral_price}}</text>
 				</view>
+
+				<view class="yt-list-cell ">
+					<text class="cell-tit clamp">运费</text>
+					<text class="cell-tip">{{total_postage}}</text>
+				</view>
+
+
 				<view class="yt-list-cell  ">
 					<text class="cell-tit clamp">需付款</text>
-					<text class="cell-tip red">￥{{orderTotal.pay_price}}</text>
+					<text class="cell-tip red">￥{{pay_price}}</text>
 				</view>
 			</view>
 		</view>
@@ -76,21 +92,29 @@
 			<text class="order-tit">订单信息</text>
 			<view class="order-ite">
 				<text class="ite-tit">订单编号</text>
-				<text>订单编号</text>
+				<text>{{id}}</text>
 				<text class="copy">复制</text>
 			</view>
 
 			<view class="order-ite">
-				<text class="ite-tit">订单编号</text>
-				<text>订单编号</text>
+				<text class="ite-tit">创建时间</text>
+				<text>{{create_time}}</text>
 			</view>
 		</view>
 		<!-- 底部 -->
 		<view class="footer">
-			<text class="submit" @click="submit">修改地址</text>
-			<text class="submit" @click="submit">取消订单</text>
-			<text class="submit pay" @click="submit">付款</text>
+			<block v-if="maskState==2">
+				<text class="submit" @click="changeAddress">修改地址</text>
+				<text class="submit" @click="cancel">取消订单</text>
+				<text class="submit pay" @click="submit">付款</text>
+			</block>
+			<block v-if="maskState==3">
+				<text class="submit pay" @click="submit">查看物流</text>
+				<text class="submit pay" @click="orderTake">确认收货</text>
+			</block v-if="maskState==4">
+			<text class="submit pay" @click="evaluate">评价订单</text>
 		</view>
+
 
 	</view>
 </template>
@@ -102,12 +126,26 @@
 	export default {
 		data() {
 			return {
+
+				name: "",
+				phone: "",
+				co_name: "",
+				id: "",
+				create_time: "",
+				total_price: "",
+				integral_price: "",
 				maskState: 0, //优惠券面板显示状态
 				desc: '', //备注
 				payType: 1, //1微信 2支付宝
 				orderTotal: {},
-				addressData: { },
-				orderList:[]
+				address: "",
+				orderList: [],
+				pay_price: "",
+				type: "",
+				type_2: "",
+				coupon_price: "",
+				reduce_price: "",
+				total_postage: ""
 			}
 		},
 		computed: {
@@ -116,9 +154,10 @@
 		async onLoad(option) {
 			//商品数据
 			let id = option.id;
-			this.maskState = id;
-			var res = await this.$req.ajax({
-				path: 'zdapp/order_pay/get_order_confirm',
+
+
+			let res = await this.$req.ajax({
+				path: 'zdapp/order/get_order_co_info',
 				title: '正在加载',
 				data: {
 					users_id: this.userInfo.id,
@@ -126,23 +165,66 @@
 
 				}
 			});
-			
+
 			if (res.data.code == 200) {
-				this.addressData = res.data.data.address;
-				this.orderTotal = res.data.data.total;
-				this.orderList = res.data.data.list;  
+				this.address = res.data.data.address;
+				this.name = res.data.data.name;
+				this.phone = res.data.data.phone;
+				this.co_name = res.data.data.co_name;
+				this.coupon_price = res.data.data.coupon_price;
+				this.pay_price = res.data.data.pay_price;
+				this.reduce_price = res.data.data.reduce_price;
+				this.total_price = res.data.data.total_price;
+				this.orderList = res.data.data.list;
+				this.total_postage = res.data.data.total_postage;
+				this.integral_price = res.data.data.integral_price;
+				this.id = res.data.data.id;
+				this.type = res.data.data.type;
+				this.type_2 = res.data.data.type_2;
+				this.create_time = res.data.data.create_time;
+				if (this.type == 1 || this.type == 2) {
+					this.maskState = 1;
+				}
+				if (this.type_2 == 1) {
+					this.maskState = 2;
+				} else if (this.type_2 == 2) {
+					this.maskState = 3;
+				} else if (this.type_2 == 3) {
+					this.maskState = 4;
+				}
 			}
-			
-			
-			
-			
 		},
 		methods: {
 			submit() {
 				uni.redirectTo({
-					url: '/pages/money/pay'
+					url: `/pages/money/pay?id=${this.id}`
 				})
 			},
+			// 确认收货
+			async orderTake() {
+				let res = await this.$req.ajax({
+					path: 'zdapp/order/co_order_take',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						co_order_id: this.id,
+
+					}
+				});
+
+				if (res.data.code == 200) {
+					uni.redirectTo({
+						url: `/pages/order/received`
+					})
+				}
+			},
+			evaluate(){
+				uni.redirectTo({
+					url: `/pages/evaluate/add?id=${this.id}`
+				})
+			},
+			changeAddress() {},
+			cancel() {},
 			stopPrevent() {}
 		}
 	}
