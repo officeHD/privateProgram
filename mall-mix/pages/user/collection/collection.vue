@@ -9,10 +9,10 @@
 		<view class="list">
 			<!-- 优惠券列表 -->
 			<view class="sub-list goods" :class="subState">
-				<view class="tis" v-if="goodsList.length==0">没有数据~</view>
+				<view class="tis" v-if="list.length==0">没有数据~</view>
 				<view class="row" v-for="(row,index) in list" :key="index">
 					<!-- 删除按钮 -->
-					<view class="menu" @tap.stop="deleteCoupon(row.id,list)">
+					<view class="menu" @tap.stop="deleteCoupon(row,list)">
 						<view class="icon shanchu"></view>
 					</view>
 					<!-- content -->
@@ -20,7 +20,7 @@
 					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
 						<view class="goods-info" @tap="toGoods(row)">
 							<view class="img">
-								<image :src="row.goods_image"></image>
+								<image :src="row.goods_image || defaultImg" @error="imageError(index)"></image>
 							</view>
 							<view class="info">
 								<view class="title">{{row.goods_name}}</view>
@@ -54,6 +54,7 @@
 	export default {
 		data() {
 			return {
+				defaultImg: '../../../static/noImg.png',
 				list: [],
 				shopList: [{
 						id: 1,
@@ -113,7 +114,10 @@
 			this.getCollection()
 		},
 		methods: {
-			toGoods(row){
+			imageError(index) {
+				this.list[index].goods_image = this.defaultImg;
+			},
+			toGoods(row) {
 				uni.redirectTo({
 					url: `/pages/product/product?id=${row.goods_id}`
 				})
@@ -129,7 +133,7 @@
 
 					}
 				});
-				 
+
 				if (res.data.code == 200) {
 					this.list = res.data.data.list;
 				}
@@ -201,16 +205,32 @@
 			},
 
 			//删除商品
-			deleteCoupon(id, List) {
+			async deleteCoupon(row, List) {
 				let len = List.length;
-				for (let i = 0; i < len; i++) {
-					if (id == List[i].id) {
-						List.splice(i, 1);
-						break;
+				// zdapp/goods_collection/del_goods_collection
+
+				let res = await this.$req.ajax({
+					path: 'zdapp/goods_collection/del_goods_collection',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						goods_id: row.goods_id
+
 					}
+				});
+
+				if (res.data.code == 200) {
+					
+					for (let i = 0; i < len; i++) {
+						if (row.id == List[i].id) {
+							List.splice(i, 1);
+							break;
+						}
+					}
+					this.oldIndex = null;
+					this.theIndex = null;
 				}
-				this.oldIndex = null;
-				this.theIndex = null;
+
 			},
 
 			discard() {

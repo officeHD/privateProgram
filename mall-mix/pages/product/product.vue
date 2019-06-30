@@ -120,7 +120,7 @@
 			<view>
 				<rich-text :nodes="shopInfo.content"></rich-text>
 			</view>
-			
+
 			<image class="img" :src="shopInfo.thumb" mode="widthFix"></image>
 		</view>
 
@@ -225,7 +225,7 @@
 			</view>
 		</view>
 		<!-- 分享 -->
-		<share ref="share" :contentHeight="580" :shareList="shareList"></share>
+		<!-- <share ref="share" :contentHeight="580" :shareList="shareList"></share> -->
 	</view>
 </template>
 
@@ -318,7 +318,6 @@
 			if (co_id) {
 				const coupon_list = await this.$req.ajax({
 					path: 'zdapp/coupon/get_coupon_list',
-					title: '正在加载',
 					data: {
 						co_id: co_id
 					}
@@ -327,11 +326,10 @@
 					// this.coupon_list = coupon_list.data.data;
 				}
 			}
-			
+
 			if (id) {
 				const evaluation = await this.$req.ajax({
 					path: 'zdapp/evaluation/get_evaluation_list',
-					title: '正在加载',
 					data: {
 						users_id: this.userInfo.id,
 						goods_id: id,
@@ -340,13 +338,11 @@
 					}
 				});
 				if (evaluation.data.code == 200) {
-					console.log();
 					this.evaluation = evaluation.data.data.list[0];
 					this.evaluationTotal = evaluation.data.data.total;
 				}
 				const goods_param = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_param',
-					title: '正在加载',
 					data: {
 						goods_id: id
 					}
@@ -356,17 +352,24 @@
 				}
 				const goods_spec = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_spec',
-					title: '正在加载',
 					data: {
 						goods_id: id
 					}
 				});
 				if (goods_spec.data.code == 200) {
 					this.specList = goods_spec.data.data;
+					this.specList.forEach(item => {
+						item.content.forEach((citem, index) => {
+							if (index == 0) {
+								this.$set(citem, 'pid', item.id);
+								this.$set(citem, 'selected', true);
+								this.specSelected.push(citem);
+							}
+						});
+					});
 				}
 				const location = await this.$req.ajax({
 					path: 'zdapp/address/get_address_list',
-					title: '正在加载',
 					data: {
 						users_id: this.userInfo.id,
 						page: '1',
@@ -377,8 +380,8 @@
 					console.log(location.data.data.list);
 					this.addressData = location.data.data.list.filter(item => item.is_default == '2')[0];
 				}
-				
-				
+
+
 				const res = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_info',
 					title: '正在加载',
@@ -388,28 +391,14 @@
 				});
 				if (res.data.code == 200) {
 					this.shopInfo = res.data.data;
+					this.getGoodSPrice()
 				}
-				
-				
-				
-
-				
-
 
 			}
-			
 			//规格 默认选中第一条
-			this.specList.forEach(item => {
-				item.content.forEach((citem, index) => {
-					if (index == 0) {
-						this.$set(citem, 'pid', item.id);
-						this.$set(citem, 'selected', true);
-						this.specSelected.push(citem);
-					}
-				});
-			});
-			this.shareList = await this.$api.json('shareList');
-			this.getGoodSPrice()
+
+			// this.shareList = await this.$api.json('shareList');
+
 		},
 		methods: {
 			//规格弹窗开关
@@ -482,7 +471,6 @@
 				let option_idStr = option_id.join(',');
 				var res = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_option',
-					title: '',
 					data: {
 						goods_id: this.shopInfo.id,
 						content: option_idStr,
@@ -534,7 +522,7 @@
 				});
 				console.log(res);
 				if (res.data.code == 200) {
-					// this.$api.msg('请填写收货人姓名');
+					this.$api.msg('已添加');
 				} else {
 					this.$api.msg(res.data.message);
 				}

@@ -77,7 +77,7 @@
 			<view class="product-list">
 				<view class="lefBox">
 					<view class="product" v-for="(product, index) in productList" :key="index" @tap="toGoods(product)" v-if="index % 2 == 0">
-						<image class="pimg" mode="widthFix" :src="product.thumb || defaultImg" @error="imageError(index)"></image>
+						<image class="pimg" mode="aspectFill" :src="product.thumb || defaultImg" @error="imageError(index)"></image>
 						<view class="name">{{ product.title }}</view>
 						<view class="info">
 							<view class="price">¥{{ product.price }}</view>
@@ -87,7 +87,7 @@
 				</view>
 				<view class="lefBox">
 					<view class="product" v-for="(product, index) in productList" :key="index" @tap="toGoods(product)" v-if="index % 2 == 1">
-						<image class="pimg" mode="widthFix" :src="product.thumb || defaultImg" @error="imageError(index)"></image>
+						<image class="pimg" mode="aspectFill" :src="product.thumb || defaultImg" @error="imageError(index)"></image>
 						<view class="name">{{ product.title }}</view>
 						<view class="info">
 							<view class="price">¥{{ product.price }}</view>
@@ -800,12 +800,14 @@
 
 				.pimg {
 					width: 100%;
-					height: auto;
+					min-height: 140upx;
+					max-height: 300upx;
 				}
 
 				image {
 					width: 100%;
-					height: auto;
+					min-height: 140upx;
+					max-height: 300upx;
 					border-radius: 20upx 20upx 0 0;
 				}
 
