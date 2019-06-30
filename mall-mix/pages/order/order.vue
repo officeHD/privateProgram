@@ -7,10 +7,9 @@
 
 		<swiper :current="tabCurrentIndex" class="swiper-box" duration="300" @change="changeTab">
 			<swiper-item class="tab-content" v-for="(tabItem, tabIndex) in navList" :key="tabIndex">
-				<scroll-view class="list-scroll-content" scroll-y @scrolltolower="loadData">
+				<scroll-view class="list-scroll-content" scroll-y @scrolltolower="loadData()">
 					<!-- 空白页 -->
 					<empty v-if="tabItem.loaded === true && tabItem.orderList.length === 0"></empty>
-
 					<!-- 订单列表 -->
 					<view v-for="(item, index) in tabItem.orderList" :key="index" class="order-item">
 						<view @click="navToDetail(item)">
@@ -21,7 +20,7 @@
 							</view>
 							<scroll-view v-if="item.list.length > 0" class="goods-box" scroll-x>
 								<view v-for="(goodsItem, goodsIndex) in item.list" :key="goodsIndex" class="goods-item">
-									<image class="goods-img" :src="goodsItem.thumb" mode="aspectFill"></image>
+									<image class="goods-img" :src="goodsItem.thumb||defaultImg" mode="aspectFill" @error="imageError(tabIndex,index,goodsIndex)"></image>
 								</view>
 							</scroll-view>
 							<view class="price-box">
@@ -30,16 +29,14 @@
 								合计
 								<text class="price">{{item.pay_price}}</text>
 							</view>
-
 						</view>
-
 						<view class="action-box b-t" v-if="item.type == 2">
 							<button class="action-btn" @click="cancelOrder(item)">取消订单</button>
 							<button class="action-btn recom" @click="payOrder(item)">立即支付</button>
 						</view>
 					</view>
 
-					<uni-load-more :status="tabItem.loadingType"></uni-load-more>
+					<!-- <uni-load-more :status="tabItem.loadingType"></uni-load-more> -->
 				</scroll-view>
 			</swiper-item>
 		</swiper>
@@ -49,7 +46,6 @@
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from '@/components/empty';
-	import Json from '@/Json';
 	import {
 		mapState
 	} from 'vuex';
@@ -65,34 +61,50 @@
 			return {
 				tabCurrentIndex: 0,
 				page: 1,
+				defaultImg: "../../static/noImg.png",
 				navList: [{
+						hasMore: true,
 						state: 0,
 						text: '全部',
+						page: 1,
 						loadingType: 'more',
+						total: 0,
 						orderList: []
 					},
 					{
+						hasMore: true,
 						state: 1,
+						page: 1,
 						text: '待付款',
 						loadingType: 'more',
+						total: 0,
 						orderList: []
 					},
 					{
+						hasMore: true,
 						state: 2,
 						text: '待发货',
+						page: 1,
 						loadingType: 'more',
+						total: 0,
 						orderList: []
 					},
 					{
+						hasMore: true,
 						state: 3,
 						text: '待收货',
+						page: 1,
 						loadingType: 'more',
+						total: 0,
 						orderList: []
 					},
 					{
+						hasMore: true,
 						state: 4,
 						text: '已完成',
+						page: 1,
 						loadingType: 'more',
+						total: 0,
 						orderList: []
 					}
 				]
@@ -117,6 +129,9 @@
 
 		methods: {
 			//
+			imageError(index1, index, index2) {
+				this.navList[index1].orderList[index].list[index2].thumb = this.defaultImg;
+			},
 			navToDetail(item) {
 				let id = item.id;
 				uni.navigateTo({
@@ -125,6 +140,7 @@
 			},
 			//获取订单列表
 			async loadData(source) {
+
 				//这里是将订单挂载到tab列表下
 				let index = this.tabCurrentIndex;
 				let navItem = this.navList[index];
@@ -134,7 +150,7 @@
 					//tab切换只有第一次需要加载数据
 					return;
 				}
-				if (navItem.loadingType === 'loading') {
+				if (navItem.loadingType === 'loading' || !navItem.hasMore) {
 					//防止重复加载
 					return;
 				}
@@ -150,17 +166,22 @@
 						users_id: this.userInfo.id,
 						type: type,
 						type_2: type_2,
-						page: this.page
+						page: navItem.page
 					}
 				});
 				if (resData.data.code == 200) {
 
-					if (this.page == 1) {
+					if (navItem.page == 1) {
 						navItem.orderList = resData.data.data.list;
 					} else {
 						navItem.orderList = navItem.orderList.concat(resData.data.data.list);
 					}
+					navItem.page++;
+					this.$set(navItem, 'total', resData.data.data.total);
 					this.$set(navItem, 'loaded', true);
+					if (navItem.orderList.length == resData.data.data.total) {
+						this.$set(navItem, 'hasMore', false);
+					}
 					navItem.loadingType = 'more';
 				}
 
@@ -400,7 +421,7 @@
 			display: flex;
 			justify-content: flex-end;
 			align-items: baseline;
-			padding: 20upx 30upx;
+			padding: 10upx 30upx;
 			font-size: $font-sm + 2upx;
 			color: $font-color-light;
 

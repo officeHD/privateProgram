@@ -26,8 +26,8 @@
 							<text class="clamp title">{{item.title}}</text>
 							<text class="attr">{{item.attr_val}}</text>
 							<text class="price">¥{{item.price}}</text>
-							<uni-number-box class="step" :min="1" :max="item.stock" :value="item.number>item.stock?item.stock:item.number"
-							 :isMax="item.number>=item.stock?true:false" :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
+							<uni-number-box class="step" :min="1" :max="10" :value="item.number"
+							 :isMax="item.number>=10?true:false" :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
 						</view>
 						<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
 					</view>
@@ -73,6 +73,9 @@
 			};
 		},
 		onLoad() {
+			
+		},
+		onShow(){
 			this.loadData();
 		},
 		watch: {
@@ -85,19 +88,17 @@
 			}
 		},
 		computed: {
-			...mapState(['hasLogin'])
+			...mapState(['hasLogin', 'userInfo'])
 		},
 		methods: {
 			//请求数据
-			async loadData() {
-
+			async loadData() { 
 				let res = await this.$req.ajax({
-					path: 'zdapp/cart/get_order_list',
-					title: '正在加载',
+					path: 'zdapp/cart/get_order_list', 
 					data: {
-						users_id: "ff8080816a9b6057016aa05476660000",
-						type: "1",
-						page: "1"
+						users_id: this.userInfo.id,
+						page_num: "10",
+						page: 1
 					}
 				});
 				if (res.statusCode == 200 && res.data.code == 200) {
@@ -139,14 +140,24 @@
 				this.calcTotal();
 			},
 			//删除
-			deleteCartItem(index) {
+			async deleteCartItem(index) {
 				let list = this.cartList;
 				let row = list[index];
 				let id = row.id;
-
-				this.cartList.splice(index, 1);
-				this.calcTotal();
-				uni.hideLoading();
+				let res = await this.$req.ajax({
+					path: 'zdapp/cart/del_order_info', 
+					data: {
+						users_id: this.userInfo.id,
+						order_id: id
+					}
+				});
+				if (res.statusCode == 200 && res.data.code == 200) { 
+					this.cartList.splice(index, 1);
+					this.calcTotal();
+					uni.hideLoading();
+				}
+				
+				
 			},
 			//清空
 			clearCart() {
@@ -160,41 +171,59 @@
 				})
 			},
 			//计算总价
-			calcTotal() {
-				let list = this.cartList;
+			async calcTotal() {
+					let list = this.cartList;
 				if (list.length === 0) {
 					this.empty = true;
 					return;
 				}
-				let total = 0;
+				let total =[];
 				let checked = true;
 				list.forEach(item => {
 					if (item.checked === true) {
-						total += item.price * item.number;
+						total[total.length]=item.id ;
 					} else if (checked === true) {
 						checked = false;
 					}
 				})
 				this.allChecked = checked;
-				this.total = Number(total.toFixed(2));
+				// this.total = Number(total.toFixed(2));
+				if(total.length==0){
+					return;
+				}
+				let res = await this.$req.ajax({
+					path: 'zdapp/cart/get_order_price', 
+					data: {
+						users_id: this.userInfo.id,
+						order_id: total.join(',')
+					}
+				});
+				if (res.statusCode == 200 && res.data.code == 200) { 
+					this.total =res.data.data.total_price
+				} 	
+			
 			},
 			//创建订单
 			createOrder() {
 				let list = this.cartList;
 				let goodsData = [];
+				let total = [];
 				list.forEach(item => {
 					if (item.checked) {
+						total.push(item.id )
 						goodsData.push({
 							attr_val: item.attr_val,
 							number: item.number
 						})
 					}
 				})
-
+				if(total.length==0){
+					return
+				}
+				let order_id=total.join(',')
+				console.log(goodsData)
 				uni.navigateTo({
-					url: `/pages/order/createOrder?data=${JSON.stringify({
-						goodsData: goodsData
-					})}`
+					url: `/pages/order/createOrder?order_id=${order_id}`
 				})
 				this.$api.msg('跳转下一页 sendData');
 			}

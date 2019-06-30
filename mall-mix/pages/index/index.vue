@@ -139,12 +139,12 @@
 					},
 					{
 						id: 2,
-						name: '零食',
-						img: '../../static/temp/c7.png'
+						name: '美妆洗护',
+						img: '../../static/temp/c6.png'
 					},
 					{
 						id: 3,
-						name: '零食',
+						name: '电器',
 						img: '../../static/temp/c8.png'
 					},
 					{
@@ -157,10 +157,10 @@
 				//猜你喜欢列表
 				productList: [{
 					goods_id: 0,
-					img: '../../static/temp/cate1.jpg',
-					name: '商品名称商品名称商品名称商品名称商品名称',
-					price: '￥168',
-					slogan: '1235人付款'
+					img: '',
+					name: '',
+					price: '',
+					slogan: ''
 				}],
 				loadingText: '正在加载...'
 			};

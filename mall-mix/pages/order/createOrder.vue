@@ -173,12 +173,12 @@
 				title: '正在加载',
 				data: {
 					users_id: this.userInfo.id,
-					order_id: '',
+					order_id: options.order_id||'',
 					co_order_id: '',
-					goods_id: options.goods_id,
-					option_id: options.option_id,
-					number: options.number,
-					address_id: options.address_id,
+					goods_id: options.goods_id||'',
+					option_id: options.option_id||'',
+					number: options.number||'',
+					address_id: options.address_id||'',
 					is_coupon: ''
 				}
 			});

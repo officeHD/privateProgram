@@ -9,10 +9,10 @@
 		<view class="list">
 			<!-- 优惠券列表 -->
 			<view class="sub-list goods" :class="subState">
-				<view class="tis" v-if="goodsList.length==0">没有数据~</view>
+				<view class="tis" v-if="list.length==0">没有数据~</view>
 				<view class="row" v-for="(row,index) in list" :key="index">
 					<!-- 删除按钮 -->
-					<view class="menu" @tap.stop="deleteCoupon(row.id,list)">
+					<view class="menu" @tap.stop="deleteCoupon(row,list)">
 						<view class="icon shanchu"></view>
 					</view>
 					<!-- content -->
@@ -20,29 +20,23 @@
 					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
 						<view class="goods-info" @tap="toGoods(row)">
 							<view class="img">
-								<image :src="row.goods_image"></image>
+								<image :src="row.co_logo || defaultImg"  @error="imageError(index)"></image>
 							</view>
 							<view class="info">
-								<view class="title">{{row.goods_name}}</view>
+								<view class="title">{{row.co_name}}</view>
 								<view class="price-number">
 									<view class="keep-num">
 										{{row.create_time}}
-									</view> 
+									</view>
 								</view>
 							</view>
 						</view>
 					</view>
 				</view>
 			</view>
-			 
-		</view>
-<view v-if="list.length<1" class="empty">
-			<image src="/static/emptyCart.jpg" mode="aspectFit"></image>
-			<view  class="empty-tips">
-				暂无该类商品
-			</view>
 
 		</view>
+		 
 	</view>
 </template>
 
@@ -53,29 +47,10 @@
 	export default {
 		data() {
 			return {
-				list: [ ],
-				shopList: [{
-						id: 1,
-						name: "冰鲜专卖店",
-						img: "/static/img/shop/1.jpg"
-					},
-					{
-						id: 2,
-						name: "果蔬天下",
-						img: "/static/img/shop/2.jpg"
-					},
-					{
-						id: 3,
-						name: "办公耗材用品店",
-						img: "/static/img/shop/3.jpg"
-					},
-					{
-						id: 4,
-						name: "天天看好书",
-						img: "/static/img/shop/4.jpg"
-					}
-				],
+				list: [],
+				shopList: [  ],
 				headerTop: 0,
+				defaultImg: '../../../static/noImg.png',
 				//控制滑动效果
 				typeClass: 'goods',
 				subState: '',
@@ -112,23 +87,47 @@
 			this.getCollection()
 		},
 		methods: {
+			toGoods(row) {
+				console.log(row)
+				uni.redirectTo({
+					url: `/pages/business/business?id=${row.co_id}`
+				})
+			
+			},
+			imageError(index) {
+				this.list[index].co_logo = this.defaultImg;
+			},
+			
 			// 
 			async getCollection() {
 				let res = await this.$req.ajax({
 					path: 'zdapp/co_recommend/get_recommend_list',
 					title: '正在加载',
 					data: {
-						users_id: this.userInfo.id,
-						 
-
+						users_id: this.userInfo.id
 					}
 				});
 				console.log(res)
-				
-				if(res.data.code==200){
-					this.list=res.data.data.list;
+
+				if (res.data.code == 200) {
+					this.list = res.data.data.list;
 				}
 			},
+			async deleteCoupon(row,list){
+				let res = await this.$req.ajax({
+					path: 'zdapp/co_recommend/del_recommend',
+					title: '正在删除',
+					data: {
+						users_id: this.userInfo.id,
+						id:row.co_id
+					}
+				});
+				 
+				if (res.data.code == 200) {
+					this.deleteCouponS(row.id,list);
+				}
+			},
+			
 			switchType(type) {
 				if (this.typeClass == type) {
 					return;
@@ -195,8 +194,8 @@
 				this.isStop = false;
 			},
 
-			//删除商品
-			deleteCoupon(id, List) {
+			// //删除商品
+			deleteCouponS(id, List) {
 				let len = List.length;
 				for (let i = 0; i < len; i++) {
 					if (id == List[i].id) {
@@ -423,7 +422,7 @@
 
 		.row {
 			width: 100%;
-			height: 30vw;
+			height: 144upx;
 			align-items: center;
 			position: relative;
 			overflow: hidden;
@@ -490,22 +489,22 @@
 					flex-wrap: nowrap;
 
 					.img {
-						width: calc(30vw - 40upx);
-						height: calc(30vw - 40upx);
+						width: 96upx;
+						height:96upx;
 						border-radius: 10upx;
 						overflow: hidden;
 						flex-shrink: 0;
 						margin-right: 20upx;
 
 						image {
-							width: calc(30vw - 40upx);
-							height: calc(30vw - 40upx);
+							width: 96upx;
+							height: 96upx;
 						}
 					}
 
 					.info {
 						width: 100%;
-						height: calc(30vw - 40upx);
+						 
 						overflow: hidden;
 						flex-wrap: wrap;
 						align-content: space-between;
@@ -513,7 +512,8 @@
 
 						.title {
 							width: 100%;
-							font-size: 28upx;
+							font-size: 36upx;
+							color: #1E1E1E;
 							display: -webkit-box;
 							-webkit-box-orient: vertical;
 							-webkit-line-clamp: 2;

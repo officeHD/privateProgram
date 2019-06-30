@@ -16,7 +16,7 @@
 					</view> 
 				</view>  
 			</view>
-			 
+			 <view class="suggest" @click="suggest">推荐</view>
 		</view> 
 		<!-- 商品列表 -->
 		<view class="goods-list">
@@ -50,7 +50,7 @@
 
 <script>
 	//高德SDK
-	// import amap from '@/common/SDK/amap-wx.js';
+	//
 	import {
 		mapState
 	} from 'vuex';
@@ -69,8 +69,8 @@
 				//猜你喜欢列表
 				productList: [{
 					goods_id: 0,
-					img: '../../static/temp/cate1.jpg',
-					name: '商品名称商品名称商品名称商品名称商品名称',
+					img: '',
+					name: '',
 					price: '￥168',
 					slogan: '1235人付款'
 				}],
@@ -78,7 +78,7 @@
 			};
 		},
 		computed: {
-			...mapState(['hasLogin'])
+			...mapState(['hasLogin','userInfo'])
 		},
 		 
 		//上拉加载，需要自己在page.json文件中配置"onReachBottomDistance"
@@ -111,6 +111,23 @@
 			 errorImg(res){
 				 console.log(res)
 				 this.businInfo.co_logo=this.defaultImg;
+			 },
+			async suggest(){
+				 
+				  	const res = await this.$req.ajax({
+				  	path: 'zdapp/co_recommend/add_recommend',
+				  	data: {
+						users_id:this.userInfo.id,
+				  		co_id: this.shopId,
+						group_id:"2c918aee6a48c1df016a48cdc53a0002",
+				  	}
+				  });
+				  if (res.data.code == 200) {
+				  	this.$api.msg("成功");
+				  	 
+				  }else{
+					  this.$api.msg(res.data.message);
+				  }
 			 },
 			async loadData() {
 				const res = await this.$req.ajax({

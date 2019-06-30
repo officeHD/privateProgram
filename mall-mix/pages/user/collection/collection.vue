@@ -113,6 +113,11 @@
 			this.getCollection()
 		},
 		methods: {
+			toGoods(row){
+				uni.redirectTo({
+					url: `/pages/product/product?id=${row.goods_id}`
+				})
+			},
 			// 
 			async getCollection() {
 				let res = await this.$req.ajax({
@@ -124,8 +129,7 @@
 
 					}
 				});
-				console.log(res)
-
+				 
 				if (res.data.code == 200) {
 					this.list = res.data.data.list;
 				}

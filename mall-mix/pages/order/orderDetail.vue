@@ -34,12 +34,12 @@
 
 		<view class="goods-section">
 			<view class="g-header b-b">
-				<image class="logo" src="http://duoduo.qibukj.cn/./Upload/Images/20190321/201903211727515.png"></image>
+				<image class="logo" :src="co_logo || defaultImg"></image>
 				<text class="name">{{co_name}}</text>
 			</view>
 			<!-- 商品列表 -->
 			<view class="g-item" v-for="(item,index) in orderList" :key="index">
-				<image :src="item.thumb"></image>
+				<image :src="item.thumb||defaultImg" @error="imageError(index)"></image>
 				<view class="right">
 					<text class="title clamp">{{item.title}}</text>
 					<text class="spec">
@@ -93,7 +93,7 @@
 			<view class="order-ite">
 				<text class="ite-tit">订单编号</text>
 				<text>{{id}}</text>
-				<text class="copy">复制</text>
+				<text class="copy" @click="copyId(id)">复制</text>
 			</view>
 
 			<view class="order-ite">
@@ -103,16 +103,16 @@
 		</view>
 		<!-- 底部 -->
 		<view class="footer">
-			<block v-if="maskState==2">
+			<block v-if="maskState==1">
 				<text class="submit" @click="changeAddress">修改地址</text>
-				<text class="submit" @click="cancel">取消订单</text>
+				<text class="submit" @click="del_order_co">取消订单</text>
 				<text class="submit pay" @click="submit">付款</text>
 			</block>
 			<block v-if="maskState==3">
 				<text class="submit pay" @click="submit">查看物流</text>
 				<text class="submit pay" @click="orderTake">确认收货</text>
-			</block v-if="maskState==4">
-			<text class="submit pay" @click="evaluate">评价订单</text>
+			</block>
+			<text v-if="maskState==4" class="submit pay" @click="evaluate">评价订单</text>
 		</view>
 
 
@@ -126,7 +126,7 @@
 	export default {
 		data() {
 			return {
-
+				defaultImg: "../../static/noImg.png",
 				name: "",
 				phone: "",
 				co_name: "",
@@ -195,10 +195,39 @@
 			}
 		},
 		methods: {
+			imageError(index) {
+				this.orderList[index].thumb = this.defaultImg;
+			},
 			submit() {
 				uni.redirectTo({
 					url: `/pages/money/pay?id=${this.id}`
 				})
+			},
+			copyId(id) {
+				uni.setClipboardData({
+					data: `${id}`,
+					success: function() {
+						this.$api.msg("复制成功");
+					}
+				});
+			},
+			async del_order_co() {
+				// 
+				let res = await this.$req.ajax({
+					path: 'zdapp/order/del_order_co',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						co_order_id: this.id,
+
+					}
+				});
+
+				if (res.data.code == 200) {
+					setTimeout(() => {
+						uni.navigateBack()
+					}, 800)
+				}
 			},
 			// 确认收货
 			async orderTake() {
@@ -218,7 +247,7 @@
 					})
 				}
 			},
-			evaluate(){
+			evaluate() {
 				uni.redirectTo({
 					url: `/pages/evaluate/add?id=${this.id}`
 				})
@@ -327,6 +356,7 @@
 			width: 50upx;
 			height: 50upx;
 			border-radius: 100px;
+			background-color: #f2f2f2;
 		}
 
 		.name {

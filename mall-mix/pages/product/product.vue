@@ -117,6 +117,10 @@
 
 		<view class="detail-desc">
 			<view class="d-header"><text>图文详情</text></view>
+			<view>
+				<rich-text :nodes="shopInfo.content"></rich-text>
+			</view>
+			
 			<image class="img" :src="shopInfo.thumb" mode="widthFix"></image>
 		</view>
 
@@ -148,7 +152,7 @@
 			<view class="mask"></view>
 			<view class="layer attr-content" @click.stop="stopPrevent" v-if="toogleType == 'Spec'">
 				<view class="a-t">
-					<image src="https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg"></image>
+					<image :src="shopInfo.thumb"></image>
 					<view class="right">
 						<text class="price">¥{{shopInfo.price}}</text>
 						<text class="stock">库存：{{stock}}件</text>
@@ -311,16 +315,34 @@
 			let co_id = options.co_id;
 			this.co_id = co_id;
 			this.id = id;
-			if (id) {
-				const res = await this.$req.ajax({
-					path: 'zdapp/goods/get_goods_info',
+			if (co_id) {
+				const coupon_list = await this.$req.ajax({
+					path: 'zdapp/coupon/get_coupon_list',
 					title: '正在加载',
 					data: {
-						id: id
+						co_id: co_id
 					}
 				});
-				if (res.data.code == 200) {
-					this.shopInfo = res.data.data;
+				if (coupon_list.data.code == 200) {
+					// this.coupon_list = coupon_list.data.data;
+				}
+			}
+			
+			if (id) {
+				const evaluation = await this.$req.ajax({
+					path: 'zdapp/evaluation/get_evaluation_list',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						goods_id: id,
+						page: '1',
+						page_num: '10'
+					}
+				});
+				if (evaluation.data.code == 200) {
+					console.log();
+					this.evaluation = evaluation.data.data.list[0];
+					this.evaluationTotal = evaluation.data.data.total;
 				}
 				const goods_param = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_param',
@@ -342,7 +364,6 @@
 				if (goods_spec.data.code == 200) {
 					this.specList = goods_spec.data.data;
 				}
-
 				const location = await this.$req.ajax({
 					path: 'zdapp/address/get_address_list',
 					title: '正在加载',
@@ -356,38 +377,27 @@
 					console.log(location.data.data.list);
 					this.addressData = location.data.data.list.filter(item => item.is_default == '2')[0];
 				}
-
-				const evaluation = await this.$req.ajax({
-					path: 'zdapp/evaluation/get_evaluation_list',
+				
+				
+				const res = await this.$req.ajax({
+					path: 'zdapp/goods/get_goods_info',
 					title: '正在加载',
 					data: {
-						users_id: this.userInfo.id,
-						goods_id: id,
-						page: '1',
-						page_num: '10'
+						id: id
 					}
 				});
-				if (evaluation.data.code == 200) {
-					console.log();
-					this.evaluation = evaluation.data.data.list[0];
-					this.evaluationTotal = evaluation.data.data.total;
+				if (res.data.code == 200) {
+					this.shopInfo = res.data.data;
 				}
+				
+				
+				
+
+				
 
 
 			}
-			if (co_id) {
-				const coupon_list = await this.$req.ajax({
-					path: 'zdapp/coupon/get_coupon_list',
-					title: '正在加载',
-					data: {
-						co_id: co_id
-					}
-				});
-				if (coupon_list.data.code == 200) {
-					// this.coupon_list = coupon_list.data.data;
-				}
-			}
-
+			
 			//规格 默认选中第一条
 			this.specList.forEach(item => {
 				item.content.forEach((citem, index) => {

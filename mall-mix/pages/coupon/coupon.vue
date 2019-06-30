@@ -20,21 +20,30 @@
 					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
 						<view class="left">
 							<view class="title">
-								<text v-if="row.discount_type==1">{{row.discount}}折</text>
-								<text v-else>￥{{row.reduce}}</text> 
-							</view> 
-							<view class="criteria">
-								满{{row.min_price}}元使用 <text>（{{row.discount_type|couponType}} ）</text>
+								{{row.name}}
 							</view>
 							<view class="term">
-								{{row.start_time}} ~ {{row.end_time}}
+								开始时间：{{row.start_time}}
+							</view>
+							<view class="term">
+								结束时间：{{row.end_time}}
 							</view>
 							<view class="gap-top"></view>
 							<view class="gap-bottom"></view>
 						</view>
 						<view class="right">
-
-							<view class="use">
+							<view class="ticket">
+								<view class="num">
+									{{row.reduce}}
+								</view>
+								<view class="unit">
+									元
+								</view>
+							</view>
+							<view class="criteria">
+								满{{row.min_price}}
+							</view>
+							<view class="use" @click="toUse(row)">
 								去使用
 							</view>
 						</view>
@@ -53,10 +62,13 @@
 					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
 						<view class="left">
 							<view class="title">
-								{{row.title}}
+								{{row.name}}
 							</view>
 							<view class="term">
-								{{row.termStart}} ~ {{row.termEnd}}
+								开始时间：{{row.start_time}}
+							</view>
+							<view class="term">
+								结束时间：{{row.end_time}}
 							</view>
 							<view class="icon shixiao">
 
@@ -67,16 +79,16 @@
 						<view class="right invalid">
 							<view class="ticket">
 								<view class="num">
-									{{row.ticket}}
+									{{row.reduce}}
 								</view>
 								<view class="unit">
 									元
 								</view>
 							</view>
 							<view class="criteria">
-								{{row.criteria}}
+								满{{row.min_price}}元
 							</view>
-							<view class="use">
+							<view class="use" @click="toUse(row)">
 								去查看
 							</view>
 						</view>
@@ -89,76 +101,47 @@
 </template>
 
 <script>
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		data() {
 			return {
-				couponValidList: [{
-						id: 1,
-						title: "日常用品立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "满50使用"
-					},
-					{
-						id: 2,
-						title: "家用电器立减100元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "100",
-						criteria: "满500使用"
-					},
-					{
-						id: 3,
-						title: "全场立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "无门槛"
-					},
-					{
-						id: 4,
-						title: "全场立减50元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "50",
-						criteria: "满1000使用"
-					}
+				couponValidList: [
 
+					{
+						"id": 17,
+						"co_id": "1",
+						"name": "满200立减30元",
+						"min_price": "200.00",
+						"reduce": "29.90",
+						"limit_type": 1,
+						"start_time": "2019-06-25 10:35:08",
+						"end_time": "2019-06-25 11:35:13",
+						"create_time": "2019-06-25 10:48:46",
+						"group_id": "2c918aee6a48c1df016a48cdc53a0002",
+						"group_name": "指点村1",
+						"group_logo": "http://xxyweeds.top:8181/iff/img/img/sythetic/20190423/71982ebeb97244a794629f021ffee34d.png",
+						"co_name": "测试商家",
+						"co_logo": null
+					}
 				],
 				couponinvalidList: [{
-						id: 1,
-						title: "日常用品立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "满50使用"
-					},
-					{
-						id: 2,
-						title: "家用电器立减100元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "100",
-						criteria: "满500使用"
-					},
-					{
-						id: 3,
-						title: "全场立减10元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "10",
-						criteria: "无门槛"
-					},
-					{
-						id: 4,
-						title: "全场立减50元",
-						termStart: "2019-04-01",
-						termEnd: "2019-05-30",
-						ticket: "50",
-						criteria: "满1000使用"
-					}
-				],
+					"id": 17,
+					"co_id": "1",
+					"name": "满200立减30元",
+					"min_price": "200.00",
+					"reduce": "29.90",
+					"limit_type": 1,
+					"start_time": "2019-06-25 10:35:08",
+					"end_time": "2019-06-25 11:35:13",
+					"create_time": "2019-06-25 10:48:46",
+					"group_id": "2c918aee6a48c1df016a48cdc53a0002",
+					"group_name": "指点村1",
+					"group_logo": "http://xxyweeds.top:8181/iff/img/img/sythetic/20190423/71982ebeb97244a794629f021ffee34d.png",
+					"co_name": "测试商家",
+					"co_logo": null
+				}],
 				headerTop: 0,
 				//控制滑动效果
 				typeClass: 'valid',
@@ -168,19 +151,10 @@
 				isStop: false
 			}
 		},
-		onPageScroll(e) {
-
+		computed: {
+			...mapState(['hasLogin', 'userInfo'])
 		},
-		filters: {
-
-			couponType: function(value) {
-				let type = "折扣券";
-				if (value === "2") {
-					type = "立减券";
-				}
-				return type
-
-			}
+		onPageScroll(e) {
 
 		},
 		//下拉刷新，需要自己在page.json文件中配置开启页面下拉刷新 "enablePullDownRefresh": true
@@ -201,25 +175,37 @@
 				}
 			}, 1);
 			// #endif
-
-			this.loadData();
-
+			this.getcoupon(1)
+			this.getcoupon(2)
 		},
 		methods: {
-			async loadData() {
+			toUse(row) {
+				console.log(row)
+				uni.redirectTo({
+					url: `/pages/business/business?id=${row.co_id}`
+				})
+
+			},
+			async getcoupon(status) {
 				let res = await this.$req.ajax({
 					path: 'zdapp/coupon/get_users_coupon_list',
 					title: '正在加载',
 					data: {
-						users_id: "ff8080816a9b6057016aa05476660000",
-						type: "1"
-						 
+						users_id: this.userInfo.id,
+						status: status
+
 					}
 				});
-				if (res.statusCode == 200 && res.data.code == 200) {
-					this.couponValidList = res.data.data.list;
-					// console.log(res.data.data.list)
+
+				if (res.data.code == 200) {
+					 
+					if(status==1){
+						this.couponValidList=res.data.data;
+					}else{
+						this.couponinvalidList=res.data.data;
+					}
 				}
+ 
 			},
 			switchType(type) {
 				if (this.typeClass == type) {
@@ -457,8 +443,8 @@
 		}
 
 		.row {
-			width: 92%;
-			height: 150upx;
+			width: 94%;
+			height: 24vw;
 			margin: 20upx auto 10upx auto;
 			border-radius: 8upx;
 			// box-shadow: 0upx 0 10upx rgba(0,0,0,0.1);
@@ -524,29 +510,20 @@
 
 				.left {
 					width: 100%;
-					background: #E0F0F3;
-					border-right: 2upx dashed #999999;
 
 					.title {
-						padding-top: 10upx;
+						padding-top: 3vw;
 						width: 90%;
 						margin: 0 5%;
-						font-size: 40upx;
-						color: #E31010;
-					}
-
-					.criteria {
-						width: 90%;
-						margin: 0 5%;
-						font-size: 23upx;
-						color: #666666;
+						font-size: 36upx;
 					}
 
 					.term {
 						width: 90%;
 						margin: 0 5%;
-						font-size: 26upx;
+						font-size: 24upx;
 						color: #999;
+						line-height: 1;
 					}
 
 					position: relative;
@@ -580,9 +557,9 @@
 
 				.right {
 					flex-shrink: 0;
-					width: 160upx;
+					width: 28%;
 					color: #fff;
-					background: #E0F0F3;
+					background: linear-gradient(to right, #ec625c, #ee827f);
 
 					&.invalid {
 						background: linear-gradient(to right, #aaa, #999);
@@ -593,7 +570,6 @@
 					}
 
 					justify-content: center;
-					align-items: center;
 
 					.ticket,
 					.criteria {
@@ -623,49 +599,19 @@
 					}
 
 					.use {
-						width: 112upx;
-						height: 54upx;
+						width: 50%;
+						height: 40upx;
 						justify-content: center;
 						align-items: center;
-						font-size: 26upx;
-						background: linear-gradient(to right, #66ADE5, #1589E3);
-
-						color: #fff;
-						border-radius: 4upx;
+						font-size: 24upx;
+						background-color: #fff;
+						color: #ee827f;
+						border-radius: 40upx;
 						padding: 0 10upx;
 					}
 				}
 			}
 
-			/*
-			<view class="carrier" :class="[theIndex==index?'open':oldIndex==index?'close':'']" @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
-				<view class="left">
-					<view class="title">
-						10元日常用品类
-					</view>
-					<view class="term">
-						2019-04-01~2019-05-30
-					</view>
-				</view>
-				<view class="right">
-					<view class="ticket">
-						<view class="num">
-							10
-						</view>
-						<view class="unit">
-							元
-						</view>
-					</view>
-					<view class="criteria">
-						满50使用
-					</view>
-					<view class="use">
-						去使用
-					</view>
-				</view>
-			</view>
-			* 
-			* */
 		}
 	}
 </style>
