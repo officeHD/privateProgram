@@ -38,7 +38,7 @@
 			return {
 				page: 1,
 				total: 0,
-				defaultImg: '../../static/noImg.png',
+				defaultImg: '../../static/errorImage.jpg',
 				productList: [],
 				loadingText: "",
 				headerTop: "0px",

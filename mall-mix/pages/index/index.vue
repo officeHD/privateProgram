@@ -77,21 +77,28 @@
 			<view class="product-list">
 				<view class="lefBox">
 					<view class="product" v-for="(product, index) in productList" :key="index" @tap="toGoods(product)" v-if="index % 2 == 0">
-						<image class="pimg" mode="aspectFill" :src="product.thumb || defaultImg" @error="imageError(index)"></image>
+						<view class="pimg">
+							<v-lazyLoad mode="aspectFill" :realSrc="product.thumb" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+						</view>
+
 						<view class="name">{{ product.title }}</view>
 						<view class="info">
-							<view class="price">¥{{ product.price }}</view>
-							<view class="slogan">{{ product.slogan }}</view>
+							<view>¥<text  class="price">{{ product.price }}</text></view>
+							<view class="slogan"><v-lazyLoad :realSrc="product.co_logo"  :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad></view>
 						</view>
 					</view>
 				</view>
 				<view class="lefBox">
 					<view class="product" v-for="(product, index) in productList" :key="index" @tap="toGoods(product)" v-if="index % 2 == 1">
-						<image class="pimg" mode="aspectFill" :src="product.thumb || defaultImg" @error="imageError(index)"></image>
+						<view class="pimg">
+							<v-lazyLoad mode="aspectFill" :realSrc="product.thumb " :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+						</view>
 						<view class="name">{{ product.title }}</view>
 						<view class="info">
-							<view class="price">¥{{ product.price }}</view>
-							<view class="slogan">{{ product.slogan }}</view>
+							<view>¥<text  class="price">{{ product.price }}</text></view>
+							<view class="slogan">
+								<v-lazyLoad :realSrc="product.co_logo"  :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -107,7 +114,16 @@
 	import {
 		mapState
 	} from 'vuex';
+	import VLazyLoad from "@/components/lazyLoad";
+
 	export default {
+		components: {
+			VLazyLoad
+		},
+
+		computed: {
+			...mapState(['hasLogin'])
+		},
 		data() {
 			return {
 				page: 1,
@@ -118,7 +134,9 @@
 				statusTop: null,
 				city: '北京',
 				currentSwiper: 0,
-				defaultImg: '../../static/noImg.png',
+				errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
+
 				// 轮播图片
 				swiperList: [{
 						id: 1,
@@ -165,9 +183,7 @@
 				loadingText: '正在加载...'
 			};
 		},
-		computed: {
-			...mapState(['hasLogin'])
-		},
+
 		onPageScroll(e) {
 			//兼容iOS端下拉时顶部漂移
 			this.headerPosition = e.scrollTop >= 0 ? 'fixed' : 'absolute';
@@ -218,7 +234,9 @@
 			//加载活动专区
 			this.loadPromotion();
 		},
+
 		methods: {
+
 			async loadData() {
 				const res = await this.$req.ajax({
 					path: 'zdapp/banner/get_banner_list',
@@ -800,44 +818,51 @@
 
 				.pimg {
 					width: 100%;
-					min-height: 140upx;
-					max-height: 300upx;
+					 
+					height: 340upx;
+					image {
+						width: 100%;
+						 
+						 height: 340upx;
+						border-radius: 20upx 20upx 0 0;
+					}
+				 
 				}
 
-				image {
-					width: 100%;
-					min-height: 140upx;
-					max-height: 300upx;
-					border-radius: 20upx 20upx 0 0;
-				}
+				
 
 				.name {
-					width: 92%;
-					padding: 10upx 4%;
+					width: 100%;
+					padding: 16upx 24upx;
 					display: -webkit-box;
 					-webkit-box-orient: vertical;
 					-webkit-line-clamp: 2;
 					text-align: justify;
 					overflow: hidden;
-					font-size: 30upx;
+					font-size: 26upx;
 				}
 
 				.info {
 					display: flex;
 					justify-content: space-between;
 					align-items: flex-end;
-					width: 92%;
-					padding: 10upx 4% 10upx 4%;
-
+					width: 100%;
+					padding: 10upx 24upx 23upx;
+					font-size: 18upx;
+					color: #e65339;
 					.price {
 						color: #e65339;
-						font-size: 30upx;
+						font-size: 32upx;
 						font-weight: 600;
 					}
 
 					.slogan {
 						color: #807c87;
 						font-size: 24upx;
+						width: 56upx;
+						height: 44upx;
+						border-radius: 10upx;
+						overflow: hidden;
 					}
 				}
 			}

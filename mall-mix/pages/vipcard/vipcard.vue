@@ -15,7 +15,7 @@
 					<!-- content -->
 					<view class="carrier" :class="[typeClass=='valid'?theIndex==index?'open':oldIndex==index?'close':'':'']">
 						<view class="content">
-							<text class="exit" @tap="delVipCard()">退出会员</text>
+							<text class="exit" @tap="delVipCard(row.id)">退出会员</text>
 							<view class="vipname">
 								VIP
 							</view>
@@ -24,9 +24,9 @@
 								<view class="afterline"></view>
 							</view>
 							<view class="info">
-								<image class="img" :src="row.avatar_web" mode="aspectFill"></image>
-								<text class="nickname_web">{{row.nickname_web}}</text>
-								<text class="level">{{row.type}}</text>
+								<image class="img" :src="row.co_logo" mode="aspectFill"></image>
+								<text class="nickname_web">{{row.co_name}}</text>
+								<text class="level">{{row.level_name}}</text>
 							</view>
 						</view>
 					</view>
@@ -41,9 +41,9 @@
 						<view class="content">
 							<text class="exit" @tap="notinter(row.id)">不感兴趣</text>
 							<view class="vipImg">
-								<image class="img" :src="row.avatar_web" mode="aspectFill"></image>
+								<image class="img" :src="row.co_logo" mode="aspectFill"></image>
 							</view>
-							<text class="vipName">{{row.nickname_web}}</text>
+							<text class="vipName">{{row.co_name}}</text>
 							<text class="vipTips">会员有礼入会即享</text>
 
 
@@ -63,49 +63,8 @@
 	export default {
 		data() {
 			return {
-				couponValidList: [{
-						"id": 17,
-						"nickname_web": "檀测试",
-						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
-						"type_id": 2,
-						"type": "一级会员",
-						"show": 1
-					},
-					{
-						"id": 1,
-						"nickname_web": "檀测试",
-						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
-						"type_id": 2,
-						"type": "一级会员",
-						"show": 1
-					},
-					{
-						id: 3,
-						"nickname_web": "檀测试",
-						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
-						"type_id": 2,
-						"type": "一级会员",
-						"show": 1
-					}
-
-				],
-				couponinvalidList: [{
-						"id": 17,
-						"nickname_web": "檀测试",
-						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
-						"type_id": 2,
-						"type": "一级会员",
-						"show": 1
-					},
-					{
-						"id": 1,
-						"nickname_web": "檀测试",
-						"avatar_web": "https://wx.qlogo.cn/mmopen/vi_32/m23gW21HuD0xQ76ozTGYzIn26K1eZEJHCFyg1Mlaiau19XhHO8SNiafZmqbqjnlnQ7ff7niat4JuXIA0x4hUosMGg/132",
-						"type_id": 2,
-						"type": "一级会员",
-						"show": 1
-					}
-				],
+				couponValidList: [  ],
+				couponinvalidList: [  ],
 				headerTop: 0,
 				//控制滑动效果
 				typeClass: 'valid',
@@ -142,17 +101,41 @@
 			async loadData() {
 
 				let res = await this.$req.ajax({
-					path: 'users_info/get_users_type_push',
+					path: 'zdapp/users/get_users_card_list',
 					title: '正在加载',
 					data: {
-						user_code: "ff8080816a9b6057016aa05476660000"
+						users_id: "ff8080816a9b6057016aa05476660000",
+						page:1,
+						page_num:10
+						
 
 					}
 				});
 				if (res.statusCode == 200 && res.data.code == 200) {
+					console.log(res.data.data.list)
 					this.couponValidList = res.data.data.list;
 					// console.log(res.data.data.list)
 				}
+				
+				let res2=await this.$req.ajax({
+					path: 'zdapp/users/get_users_push',
+					title: '正在加载',
+					data: {
+						users_id: "ff8080816a9b6057016aa05476660000",
+						page:1,
+						page_num:10
+						
+
+					}
+				});
+				console.log(res2)
+				if (res2.statusCode == 200 && res2.data.code == 200) {
+					this.couponinvalidList = res2.data.data;
+					
+				}
+				
+				
+
 			},
 			switchType(type) {
 				if (this.typeClass == type) {
@@ -170,57 +153,81 @@
 					this.subState = this.typeClass == 'valid' ? '' : this.subState;
 				}, 200)
 			},
-			delVipCard() {
-				let that = this;
-				this.$req.ajax({
-					path: 'users_info/del_users_type',
+			async delVipCard(id) {
+				 
+				let res=await this.$req.ajax({
+					path: 'zdapp/users/del_users_type',
 					title: '删除',
 					data: {
-						user_code: "ff8080816a9b6057016aa05476660000"
-
-					},
-					finshFun: function(res) {
-						console.log(res);
-						that.loadData();
-					}
+						users_id: "ff8080816a9b6057016aa05476660000",
+						id:id 
+					}  
 				});
+				// couponValidList
+				let List=this.couponValidList;
+				let len=List.lenght;
+				if (res.data.code == 200) {
+					
+					for (let i = 0; i < len; i++) {
+						if (row.id == List[i].id) {
+							this.couponValidList.splice(i, 1);
+							break;
+						}
+					} 
+				}
 
 
 
 			},
 			//领取会员卡
-			getVip(id) {
+			async getVip(id) {
 				let that = this;
-				this.$req.ajax({
-					path: 'users_info/get_users_type',
-					title: '删除',
+				let res=await this.$req.ajax({
+					path: 'zdapp/users/get_users_type',
+					 
 					data: {
-						user_code: "ff8080816a9b6057016aa05476660000",
-						id:id
-
-					},
-					finshFun: function(res) {
-						console.log(res);
-						that.loadData();
-					}
-				});
-			},
-			//忽略会员卡
-			notinter(id) {
-				let that = this;
-				this.$req.ajax({
-					path: 'users_info/get_users_type_push',
-					title: '删除',
-					data: {
-						user_code: "ff8080816a9b6057016aa05476660000",
+						users_id: "ff8080816a9b6057016aa05476660000",
 						id:id
 				
-					},
-					finshFun: function(res) {
-						console.log(res);
-						that.loadData();
 					}
 				});
+				// couponValidList
+				let List=this.couponinvalidList;
+				let len=List.lenght;
+				let addObj={}
+				if (res.data.code == 200) { 
+					for (let i = 0; i < len; i++) {
+						if (id == List[i].id) {
+							this.couponValidList.push(List[i])
+							this.couponinvalidList.splice(i, 1);
+							break;
+						}
+					} 
+				}
+			},
+			//忽略会员卡
+			async notinter(id) {
+				let that = this;
+				let res=await this.$req.ajax({
+					path: 'zdapp/users/del_users_type_push',
+				 
+					data: {
+						users_id: "ff8080816a9b6057016aa05476660000",
+						id:id
+				
+					}
+				});
+				// couponValidList
+				let List=this.couponinvalidList;
+				let len=List.lenght;
+				if (res.data.code == 200) { 
+					for (let i = 0; i < len; i++) {
+						if (row.id == List[i].id) {
+							this.couponinvalidList.splice(i, 1);
+							break;
+						}
+					} 
+				}
 			},
 
 			//控制左滑删除效果-begin

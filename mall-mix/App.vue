@@ -23,7 +23,8 @@
 		},
 		onLaunch: function(options) {
 			let that = this;
-			let userInfo = uni.getStorageSync('userInfo') || '';
+			// let userInfo = uni.getStorageSync('userInfo') || '';
+			let userInfo = '';
 			if (userInfo.id) {
 				//更新登陆状态
 				uni.getStorage({

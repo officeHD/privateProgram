@@ -50,7 +50,7 @@
 				list: [],
 				shopList: [  ],
 				headerTop: 0,
-				defaultImg: '../../../static/noImg.png',
+				defaultImg: '../../../static/errorImage.jpg',
 				//控制滑动效果
 				typeClass: 'goods',
 				subState: '',

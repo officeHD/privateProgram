@@ -64,7 +64,7 @@
 				page: 1,
 				total: 0, 
 				
-				defaultImg: '../../static/noImg.png', 
+				defaultImg: '../../static/errorImage.jpg', 
 				// 分类菜单 
 				//猜你喜欢列表
 				productList: [{

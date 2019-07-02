@@ -54,7 +54,7 @@
 	export default {
 		data() {
 			return {
-				defaultImg: '../../../static/noImg.png',
+				defaultImg: '../../../static/errorImage.jpg',
 				list: [],
 				shopList: [{
 						id: 1,

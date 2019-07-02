@@ -126,7 +126,7 @@
 	export default {
 		data() {
 			return {
-				defaultImg: "../../static/noImg.png",
+				defaultImg: "../../static/errorImage.jpg",
 				name: "",
 				phone: "",
 				co_name: "",

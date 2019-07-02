@@ -85,7 +85,7 @@
 					<text class="yticon icon-yishouhuo"></text>
 					<text>已完成</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=5')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/product/return?state=5')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-shouhoutuikuan"></text>
 					<text>退款/售后</text>
 				</view>

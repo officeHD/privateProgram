@@ -61,7 +61,7 @@
 			return {
 				tabCurrentIndex: 0,
 				page: 1,
-				defaultImg: "../../static/noImg.png",
+				defaultImg: "../../static/errorImage.jpg",
 				navList: [{
 						hasMore: true,
 						state: 0,

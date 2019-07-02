@@ -22,16 +22,23 @@
 					}
 				}
 			}
-		}, {
+		}, 
+		{
+			"path": "pages/product/return",
+			"style": {
+				"navigationBarTitleText": "退换货"
+			}
+		},
+		{
 			"path": "pages/set/set",
 			"style": {
 				"navigationBarTitleText": "设置"
 			}
 		},
 		{
-		    "path" : "pages/product/goods-list",
-		    "style" : {
-				"navigationBarTitleText" : "",
+			"path": "pages/product/goods-list",
+			"style": {
+				"navigationBarTitleText": "",
 				"enablePullDownRefresh": true,
 				"onReachBottomDistance": 50
 			}
@@ -104,20 +111,20 @@
 			"style": {
 				"navigationBarTitleText": "订单详情"
 				// #ifdef MP
-				 
+
 				// #endif
-				 
+
 			}
-		},{
+		}, {
 
 			"path": "pages/order/received",
 			"style": {
 				"navigationBarTitleText": "订单详情"
-				 
+
 			}
 		},
-		
-		
+
+
 		{
 			"path": "pages/coupon/coupon",
 			"style": {
@@ -193,14 +200,13 @@
 			"style": {
 				"navigationBarTitleText": "评价"
 			}
+		}, {
+			"path": "pages/business/business",
+			"style": {
+				"navigationBarTitleText": "店铺详情"
+			}
 		}
-	    ,{
-            "path" : "pages/business/business",
-            "style": {
-            	"navigationBarTitleText": "店铺详情"
-            }
-        }
-    ],
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
