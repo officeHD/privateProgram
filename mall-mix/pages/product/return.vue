@@ -2,10 +2,14 @@
 <template>
 	<view class="container">
 		<view class="g-item">
-			<image :src="defaultImg"></image>
+			<view class="img">
+				<v-lazyLoad mode="aspectFill" :realSrc="goodsInfo.thumb" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+			</view>
+			
+			 
 			<view class="right">
-				<text class="title clamp ">春装款春装款春装款春装款春装款</text>
-				<text class="spec"> 春装款 L</text>
+				<text class="title clamp ">{{goodsInfo.title}}</text>
+				<text class="spec">{{goodsInfo.spec_name}}</text>
 			</view>
 		</view>
 
@@ -43,20 +47,57 @@
 				<image src="../../static/add.png" mode="aspectFill"></image>
 			</view>
 		</view>
-
+		<view class="issue-btn-box">
+			<button   class="submit-btn" type="primary" @click="doSubmit">提交</button>
+						 
+		</view>
 	</view>
 </template>
 
 <script>
 	import rup from '@/common/request/request-upFiles.js';
+	import VLazyLoad from "@/components/lazyLoad";
+
+	import {
+		mapState
+	} from 'vuex';
 	export default {
+		components: {
+			VLazyLoad
+		},
+		computed: {
+			...mapState(['hasLogin', 'userInfo'])
+		},
 		data() {
 			return {
-				defaultImg: "../../static/errorImage.jpg",
-				file: []
+				errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
+				 
+				goodsInfo:{},
+				file: [],
+				id:"104"
 			}
 		},
+		onLoad() {
+			this.loadData();
+		},
 		methods: {
+			async loadData(){
+				 
+				let res = await this.$req.ajax({
+					path: 'zdapp/order/get_order_info',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						order_id: this.id, 
+					}
+				});
+				if(res.data.code==200){
+					this.goodsInfo=res.data.data;
+				}
+			 
+				
+			},
 			async testUp(index) {
 				try {
 					const res = await rup.selectFiles({
@@ -89,6 +130,14 @@
 				} catch (e) {
 					console.log(e)
 				}
+			},
+			doSubmit(){
+				 uni.navigateTo({
+					url: '/pages/product/returnDetail',
+					success: res => {},
+					fail: () => {},
+					complete: () => {}
+				})
 			},
 		}
 
@@ -131,7 +180,11 @@
 		display: flex;
 		padding: 20upx 30upx;
 		background-color: #fff;
-
+		.img{
+			width: 140upx;
+			height: 140upx;
+			border-radius: 4upx;
+		}
 		image {
 			flex-shrink: 0;
 			display: block;
@@ -193,5 +246,25 @@
 
 	.mt20 {
 		margin-top: 20upx;
+	}
+	.issue-btn-box{
+		height: 100upx;
+		position: fixed;
+		padding: 0 30upx;
+		left: 0;
+		bottom:0;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-top: 1upx solid #e6e6e6;
+		button{
+			width:100%;
+			height: 80upx;
+			 
+			font-size: 30upx;
+			background-color: #3682FF;
+			line-height: 80upx
+		}
 	}
 </style>

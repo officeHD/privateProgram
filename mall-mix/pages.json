@@ -30,6 +30,13 @@
 			}
 		},
 		{
+			"path": "pages/product/returnDetail",
+			"style": {
+				"navigationBarTitleText": "填写物流信息"
+			}
+		},
+		
+		{
 			"path": "pages/set/set",
 			"style": {
 				"navigationBarTitleText": "设置"
