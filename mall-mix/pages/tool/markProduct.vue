@@ -20,7 +20,8 @@
 					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
 						<view class="goods-info" @tap="toGoods(row)">
 							<view class="img">
-								<image :src="row.goods_image || defaultImg" @error="imageError(index)"></image>
+								<v-lazyLoad mode="aspectFill" :realSrc="row.goods_image " :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+
 							</view>
 							<view class="info">
 								<view class="title">{{row.goods_name}}</view>
@@ -36,47 +37,38 @@
 			</view>
 
 		</view>
-		<view v-if="list.length<1" class="empty">
+		<empty v-if="list.length === 0"></empty>
+		<!-- <view v-if="list.length<1" class="empty">
 			<image src="/static/emptyCart.jpg" mode="aspectFit"></image>
 			<view class="empty-tips">
 				暂无该类商品
 			</view>
 
-		</view>
+		</view> -->
 	</view>
 	</view>
 </template>
 
 <script>
+	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+	import empty from '@/components/empty';
+	import VLazyLoad from "@/components/lazyLoad";
+
 	import {
 		mapState
 	} from 'vuex';
 	export default {
+		components: {
+			uniLoadMore,
+			VLazyLoad,
+			empty
+		},
 		data() {
 			return {
-				defaultImg: '../../../static/errorImage.jpg',
+
+				errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
 				list: [],
-				shopList: [{
-						id: 1,
-						name: "冰鲜专卖店",
-						img: "/static/img/shop/1.jpg"
-					},
-					{
-						id: 2,
-						name: "果蔬天下",
-						img: "/static/img/shop/2.jpg"
-					},
-					{
-						id: 3,
-						name: "办公耗材用品店",
-						img: "/static/img/shop/3.jpg"
-					},
-					{
-						id: 4,
-						name: "天天看好书",
-						img: "/static/img/shop/4.jpg"
-					}
-				],
 				headerTop: 0,
 				//控制滑动效果
 				typeClass: 'goods',
@@ -130,7 +122,6 @@
 					data: {
 						users_id: this.userInfo.id,
 						group_id: "2c918aee6a48c1df016a48cdc53a0002"
-
 					}
 				});
 
@@ -220,7 +211,6 @@
 				});
 
 				if (res.data.code == 200) {
-					
 					for (let i = 0; i < len; i++) {
 						if (row.id == List[i].id) {
 							List.splice(i, 1);

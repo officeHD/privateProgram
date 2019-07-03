@@ -133,13 +133,13 @@
 
 
 		{
-			"path": "pages/coupon/coupon",
+			"path": "pages/tool/coupon",
 			"style": {
 				"navigationBarTitleText": "优惠券"
 			}
 		},
 		{
-			"path": "pages/vipcard/vipcard",
+			"path": "pages/tool/vipCard",
 			"style": {
 				"navigationBarTitleText": "会员卡"
 			}
@@ -188,12 +188,12 @@
 			"path": "pages/wuliu/wuliu",
 			"style": {}
 		}, {
-			"path": "pages/user/keep/keep",
+			"path": "pages/tool/markShop",
 			"style": {
 				"navigationBarTitleText": "推荐"
 			}
 		}, {
-			"path": "pages/user/collection/collection",
+			"path": "pages/tool/markProduct",
 			"style": {
 				"navigationBarTitleText": "收藏"
 			}

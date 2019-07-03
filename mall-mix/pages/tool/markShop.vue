@@ -9,7 +9,7 @@
 		<view class="list">
 			<!-- 优惠券列表 -->
 			<view class="sub-list goods" :class="subState">
-				<view class="tis" v-if="list.length==0">没有数据~</view>
+				<empty v-if="list.length === 0"></empty>
 				<view class="row" v-for="(row,index) in list" :key="index">
 					<!-- 删除按钮 -->
 					<view class="menu" @tap.stop="deleteCoupon(row,list)">
@@ -20,7 +20,8 @@
 					 @touchstart="touchStart(index,$event)" @touchmove="touchMove(index,$event)" @touchend="touchEnd(index,$event)">
 						<view class="goods-info" @tap="toGoods(row)">
 							<view class="img">
-								<image :src="row.co_logo || defaultImg"  @error="imageError(index)"></image>
+								<v-lazyLoad mode="aspectFill" :realSrc="row.co_logo " :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+								 
 							</view>
 							<view class="info">
 								<view class="title">{{row.co_name}}</view>
@@ -44,13 +45,23 @@
 	import {
 		mapState
 	} from 'vuex';
+	import empty from '@/components/empty';
+
+	import VLazyLoad from "@/components/lazyLoad";
 	export default {
+		components: {
+			 
+			VLazyLoad,
+			empty
+		},
 		data() {
 			return {
 				list: [],
 				shopList: [  ],
 				headerTop: 0,
-				defaultImg: '../../../static/errorImage.jpg',
+				
+				errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
 				//控制滑动效果
 				typeClass: 'goods',
 				subState: '',

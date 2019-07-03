@@ -8,10 +8,10 @@
 		<view class="place"></view>
 		<view class="list">
 			<!-- 优惠券列表 -->
-			<view class="sub-list valid" :class="subState">
-				<view class="tis" v-if="couponValidList.length==0">没有数据~</view>
-				<view class="row" v-for="(row,index) in couponValidList" :key="index">
 
+			<scroll-view class="sub-list valid" :class="subState" scroll-y @scrolltolower="loadValid()">
+				<empty v-if="couponValidList.length === 0"></empty>
+				<view class="row" v-for="(row,index) in couponValidList" :key="index">
 					<!-- content -->
 					<view class="carrier" :class="[typeClass=='valid'?theIndex==index?'open':oldIndex==index?'close':'':'']">
 						<view class="content">
@@ -31,15 +31,16 @@
 						</view>
 					</view>
 				</view>
-			</view>
-			<view class="sub-list invalid" :class="subState">
-				<view class="tis" v-if="couponinvalidList.length==0">没有数据~</view>
+			</scroll-view>
+
+			<scroll-view class="sub-list invalid" :class="subState" scroll-y @scrolltolower="loadInvalid()">
+				<empty v-if="couponinvalidList.length === 0"></empty>
 				<view class="row" v-for="(row,index) in couponinvalidList" :key="index">
 
 					<!-- content -->
 					<view class="carrier" :class="[typeClass=='valid'?theIndex==index?'open':oldIndex==index?'close':'':'']">
 						<view class="content">
-							<text class="exit" @tap="notinter(row.id)">不感兴趣</text>
+							<text class="exit" @tap="notinter(row.id,couponinvalidList)">不感兴趣</text>
 							<view class="vipImg">
 								<image class="img" :src="row.co_logo" mode="aspectFill"></image>
 							</view>
@@ -47,30 +48,42 @@
 							<text class="vipTips">会员有礼入会即享</text>
 
 
-							<view class="lingqu" @tap="getVip(row.id)">
+							<view class="lingqu" @tap="getVip(row.id,couponinvalidList)">
 								立即领取
 							</view>
 						</view>
 					</view>
 				</view>
-			</view>
+			</scroll-view>
 		</view>
 
 	</view>
 </template>
 
 <script>
+	import empty from '@/components/empty';
+	import {
+		mapState
+	} from 'vuex';
 	export default {
+		components: {
+
+			empty
+		},
 		data() {
 			return {
-				couponValidList: [  ],
-				couponinvalidList: [  ],
+				couponValidList: [],
+				couponinvalidList: [],
 				headerTop: 0,
 				//控制滑动效果
 				typeClass: 'valid',
 				subState: '',
 				theIndex: null,
 				oldIndex: null,
+				validPage: 1,
+				validMore: true,
+				invalidMore: true,
+				invalidPage: 1,
 				isStop: false
 			}
 		},
@@ -97,45 +110,67 @@
 			// #endif
 			this.loadData();
 		},
+		computed: {
+			...mapState(['hasLogin', 'userInfo'])
+		},
 		methods: {
-			async loadData() {
-
+			loadData() {
+				this.validPage = 1;
+				this.invalidPage = 1;
+				this.loadInvalid();
+				this.loadValid();
+			},
+			async loadValid() {
+				if (!validMore && this.validPage > 1) {
+					return
+				}
 				let res = await this.$req.ajax({
 					path: 'zdapp/users/get_users_card_list',
 					title: '正在加载',
 					data: {
-						users_id: "ff8080816a9b6057016aa05476660000",
-						page:1,
-						page_num:10
-						
+						users_id: this.userInfo.id,
+						page: this.validPage,
+						page_num: 10
 
 					}
 				});
+				if (res.data.data.list.length == 10) {
+					this.validPage++;
+					this.validMore = true;
+				} else {
+					this.validMore = false;
+				}
 				if (res.statusCode == 200 && res.data.code == 200) {
 					console.log(res.data.data.list)
 					this.couponValidList = res.data.data.list;
 					// console.log(res.data.data.list)
 				}
-				
-				let res2=await this.$req.ajax({
+			},
+			async loadInvalid() {
+				if (!invalidMore && this.invalidPage > 1) {
+					return
+				}
+				let res2 = await this.$req.ajax({
 					path: 'zdapp/users/get_users_push',
 					title: '正在加载',
 					data: {
-						users_id: "ff8080816a9b6057016aa05476660000",
-						page:1,
-						page_num:10
-						
+						users_id: this.userInfo.id,
+						page: this.invalidPage,
+						page_num: 10
+
 
 					}
 				});
-				console.log(res2)
+				if (res2.data.data.length == 10) {
+					this.invalidMore = true;
+					this.invalidPage++;
+				} else {
+					this.invalidMore = false;
+				}
 				if (res2.statusCode == 200 && res2.data.code == 200) {
 					this.couponinvalidList = res2.data.data;
-					
-				}
-				
-				
 
+				}
 			},
 			switchType(type) {
 				if (this.typeClass == type) {
@@ -154,26 +189,17 @@
 				}, 200)
 			},
 			async delVipCard(id) {
-				 
-				let res=await this.$req.ajax({
+
+				let res = await this.$req.ajax({
 					path: 'zdapp/users/del_users_type',
 					title: '删除',
 					data: {
-						users_id: "ff8080816a9b6057016aa05476660000",
-						id:id 
-					}  
+						users_id: this.userInfo.id,
+						id: id
+					}
 				});
-				// couponValidList
-				let List=this.couponValidList;
-				let len=List.lenght;
 				if (res.data.code == 200) {
-					
-					for (let i = 0; i < len; i++) {
-						if (row.id == List[i].id) {
-							this.couponValidList.splice(i, 1);
-							break;
-						}
-					} 
+					this.loadData()
 				}
 
 
@@ -182,51 +208,34 @@
 			//领取会员卡
 			async getVip(id) {
 				let that = this;
-				let res=await this.$req.ajax({
+				let res = await this.$req.ajax({
 					path: 'zdapp/users/get_users_type',
-					 
+
 					data: {
-						users_id: "ff8080816a9b6057016aa05476660000",
-						id:id
-				
+						users_id: this.userInfo.id,
+						id: id
+
 					}
 				});
-				// couponValidList
-				let List=this.couponinvalidList;
-				let len=List.lenght;
-				let addObj={}
-				if (res.data.code == 200) { 
-					for (let i = 0; i < len; i++) {
-						if (id == List[i].id) {
-							this.couponValidList.push(List[i])
-							this.couponinvalidList.splice(i, 1);
-							break;
-						}
-					} 
+				if (res.data.code == 200) {
+					this.loadData()
 				}
 			},
 			//忽略会员卡
-			async notinter(id) {
+			async notinter(id, List) {
 				let that = this;
-				let res=await this.$req.ajax({
+				let res = await this.$req.ajax({
 					path: 'zdapp/users/del_users_type_push',
-				 
+
 					data: {
-						users_id: "ff8080816a9b6057016aa05476660000",
-						id:id
-				
+						users_id: this.userInfo.id,
+						id: id
+
 					}
 				});
-				// couponValidList
-				let List=this.couponinvalidList;
-				let len=List.lenght;
-				if (res.data.code == 200) { 
-					for (let i = 0; i < len; i++) {
-						if (row.id == List[i].id) {
-							this.couponinvalidList.splice(i, 1);
-							break;
-						}
-					} 
+
+				if (res.data.code == 200) {
+					this.loadData()
 				}
 			},
 
@@ -280,18 +289,7 @@
 				this.isStop = false;
 			},
 
-			//删除商品
-			deleteCoupon(id, List) {
-				let len = List.length;
-				for (let i = 0; i < len; i++) {
-					if (id == List[i].id) {
-						List.splice(i, 1);
-						break;
-					}
-				}
-				this.oldIndex = null;
-				this.theIndex = null;
-			},
+
 
 			discard() {
 				//丢弃
@@ -398,6 +396,7 @@
 		width: 100%;
 		display: block;
 		position: relative;
+		height: calc(100vh - 95upx);
 	}
 
 	@keyframes showValid {
@@ -426,6 +425,7 @@
 			top: 0;
 			left: 100%;
 			display: none;
+			height: 100%;
 		}
 
 		&.showvalid {

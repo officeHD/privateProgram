@@ -97,12 +97,12 @@
 				</view>
 			</view>
 			<view class="order-section">
-				<view class="order-item" @click="navTo('/pages/user/collection/collection?state=1')" hover-class="common-hover"
+				<view class="order-item" @click="navTo('/pages/tool/markProduct?state=1')" hover-class="common-hover"
 				 :hover-stay-time="50">
 					<text class="yticon icon-daifukuan"></text>
 					<text>收藏夹</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/coupon/coupon')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/tool/coupon')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-shouye"></text>
 					<text>优惠券</text>
 				</view>
@@ -111,11 +111,11 @@
 					<text class="yticon icon-yishouhuo"></text>
 					<text>收货地址</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/vipcard/vipcard')" hover-class="common-hover" :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/tool/vipCard')" hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>会员卡</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/user/keep/keep?state=4')" hover-class="common-hover"
+				<view class="order-item" @click="navTo('/pages/tool/markShop')" hover-class="common-hover"
 				 :hover-stay-time="50">
 					<text class="yticon icon-shouhoutuikuan"></text>
 					<text>我的推荐</text>
