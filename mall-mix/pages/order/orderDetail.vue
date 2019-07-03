@@ -48,7 +48,7 @@
 						<text class="price">￥{{item.price}}</text>
 						<text class="number">x {{item.number}}</text>
 					</view>
-					<view class="" v-if="maskState==3">
+					<view class="" v-if="maskState==3" @click="returnBack(item.id)">
 						申请退换
 					</view>
 				</view>
@@ -195,6 +195,11 @@
 			}
 		},
 		methods: {
+			returnBack(id){
+				uni.navigateTo({
+					url: `/pages/product/return?id=${id}`
+				})
+			},
 			imageError(index) {
 				this.orderList[index].thumb = this.defaultImg;
 			},

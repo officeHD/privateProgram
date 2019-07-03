@@ -2,15 +2,15 @@
 <template>
 	<view class="container">
 		<view class="user-section">
-			<text class="top-title">订单待付款</text>
-			<text class="top-con">剩余24小时32分钟自动关闭</text>
+			<text class="top-title">退款申请成功</text>
+			<text class="top-con"></text>
 		</view>
 		<view class="address-section">
 			<view class="order-content">
 				请按以下地址退回
 			</view>
 			<view class="location">
-				安徽省合肥市庐阳区
+				{company.refund_address}
 			</view>
 		</view>
 		<view class="address-section">
@@ -20,11 +20,11 @@
 			<view class="addressMess">
 				<view class="item">
 					<text>快递单号：</text>
-					<input class="input" type="text" value="" placeholder="" />
+					<input class="input" type="text" value="" placeholder="" data-key="tracking_number" @input="inputChange" />
 				</view>
 				<view class="item">
-					<text>快递单号：</text>
-					<input class="input" type="text" value="" placeholder="" />
+					<text>物流公司：</text>
+					<input class="input" type="text" value="" placeholder="" data-key="logistics" @input="inputChange" />
 				</view>
 			</view>
 		</view>
@@ -35,16 +35,16 @@
 				要退的商品
 			</view>
 			<view class="g-item">
-				<image :src="defaultImg"></image>
+				<v-lazyLoad mode="aspectFill" :realSrc="goodsInfo.thumb" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
 				<view class="right">
-					<text class="title clamp ">春装款春装款春装款春装款春装款</text>
-					<text class="spec"> 春装款 L</text>
+					<text class="title clamp ">{{goodsInfo.title}}</text>
+					<text class="spec">{{goodsInfo.spec_name}}</text>
 				</view>
 			</view>
 
 		</view>
 		<view class="money">
-			退款金额：<text>￥30.00</text>
+			退款金额：<text>￥{{refund.refund_price}}</text>
 		</view>
 		<view class="address-section">
 
@@ -65,17 +65,96 @@
 
 <script>
 	import rup from '@/common/request/request-upFiles.js';
+	import VLazyLoad from "@/components/lazyLoad";
+
+	import {
+		mapState
+	} from 'vuex';
 	export default {
+		components: {
+			VLazyLoad
+		},
 		data() {
 			return {
-				defaultImg: "../../static/errorImage.jpg",
+				logistics: "",
+				tracking_number: "",
+				goodsInfo: {},
+				refund: {},
+				company: {},
+				id: "",
+				errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
+
 				file: []
 			}
 		},
+		computed: {
+			...mapState(['hasLogin', 'userInfo'])
+		},
+		onLoad(options) {
+			let id = options.id;
+			this.id = id;
+			this.loadData();
+		},
 		methods: {
-			async testUp(index) {
+			inputChange(e) {
+				const key = e.currentTarget.dataset.key;
+				this[key] = e.detail.value;
+			},
+			async upload(){
+				if(!this.tracking_number){
+					this.$api.msg("请输入快递单号")
+					return false;
+				}
+				if(!this.logistics){
+					this.$api.msg("请输入物流公司")
+					return false;
+				}
+				let res = await this.$req.ajax({
+					path: 'zdapp/order_refund/add_refund_tracking',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						order_id: this.id,
+						tracking_number:this.tracking_number,
+						logistics:this.logistics,
+					}
+				});
+				if(res.data.code==200){
+					uni.switchTab({
+						url:"pages/user/user"
+					})
+				}
+			},
+			async loadData() {
 				try {
-					console.log(this.eva)
+					let res = await this.$req.ajax({
+						path: 'zdapp/order_refund/get_refund_info',
+						title: '正在加载',
+						data: {
+							users_id: this.userInfo.id,
+							order_id: this.id,
+						}
+					});
+					if (res.data.code == 200) {
+
+						this.company = res.data.data.company;
+						this.refund = res.data.data.refund;
+
+					}
+					let res2 = await this.$req.ajax({
+						path: 'zdapp/order/get_order_info',
+						title: '正在加载',
+						data: {
+							users_id: this.userInfo.id,
+							order_id: this.id,
+						}
+					});
+					if (res2.data.code == 200) {
+						this.goodsInfo = res2.data.data;
+					}
+
+
 				} catch (e) {
 					console.log(e)
 				}
@@ -117,7 +196,8 @@
 				display: flex;
 				font-size: 24upx;
 				color: #888888;
-				 align-items: center;
+				align-items: center;
+
 				.input {
 					flex: 1;
 					margin-left: 10upx;
@@ -219,7 +299,7 @@
 		border-top: 1upx solid #e6e6e6;
 
 		button {
-			width:336upx;
+			width: 336upx;
 			height: 80upx;
 
 			font-size: 30upx;

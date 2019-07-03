@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<view>
+		<view class="nav">
 			<view class="uni-list">
 				<view class="uni-list-cell">
 					<view class="uni-list-cell-db">
@@ -20,9 +20,11 @@
 					</view>
 				</view>
 			</view>
+
 		</view>
+		<empty v-if="  listArr.length === 0"></empty>
 		<view v-for="(item,index) in listArr" :key="index">
-			<view class="listT" >
+			<view class="listT">
 				<text class="listl">{{item.label}}</text>
 				<view class="listR">
 					<text>支出</text>
@@ -47,20 +49,26 @@
 </template>
 
 <script>
+	import empty from '@/components/empty';
 	import {
 		mapState
 	} from 'vuex';
 	export default {
+		components: {
+
+			empty
+		},
 		data() {
 
 			return {
+
 				title: 'picker',
 				array: ['村贝', '现金'],
 				typeArr: ['1', '2'],
 				index: "",
 				date: "",
 				time: '',
-				listArr:'',
+				listArr: '',
 			}
 		},
 		computed: {
@@ -84,22 +92,22 @@
 					title: '正在加载',
 					data: {
 						users_id: this.userInfo.id,
-						money_type: this.typeArr[this.index],
+						money_type: this.typeArr[this.index] || "",
 						time: this.date
 					}
 				});
 				if (res.data.code == 200) {
 					console.log();
 					let orderList = res.data.data.list;
-					let listArr=[];
+					let listArr = [];
 					for (var index in orderList) {
-						listArr[listArr.length]={
-							value:orderList[index],
-							label:index
+						listArr[listArr.length] = {
+							value: orderList[index],
+							label: index
 						}
-						 
+
 					}
-					this.listArr=listArr
+					this.listArr = listArr
 					console.log(listArr)
 				}
 			},
@@ -138,6 +146,21 @@
 	.content {
 		background: #f5f5f5;
 		height: 100%;
+	}
+
+	.nav {
+		display: flex;
+		height: 88upx;
+		padding: 0 5px;
+		background: #fff;
+		box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+		position: relative;
+		z-index: 10;
+	}
+
+	.uni-list {
+		background-color: #fff;
+		z-index: 999;
 	}
 
 	.uni-list-cell {

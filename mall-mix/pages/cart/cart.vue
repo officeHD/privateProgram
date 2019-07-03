@@ -18,18 +18,25 @@
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}">
 						<view class="image-wrapper">
-							<image :src="item.thumb" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
-							 @error="onImageError('cartList', index)"></image>
+							<v-lazyLoad mode="aspectFill" :realSrc="item.thumb " :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+							<!-- <image :src="item.thumb" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
+							 @error="onImageError('cartList', index)"></image> -->
 							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.checked}" @click="check('item', index)"></view>
 						</view>
 						<view class="item-right">
-							<text class="clamp title">{{item.title}}</text>
+							<view class="contenrow">
+								<text class="clamp title">{{item.title}}</text>
+								<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
+							</view>
 							<text class="attr">{{item.attr_val}}</text>
-							<text class="price">¥{{item.price}}</text>
-							<uni-number-box class="step" :min="1" :max="10" :value="item.number"
-							 :isMax="item.number>=10?true:false" :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
+							<view class="contenrow">
+								<text class="price">¥{{item.price}}</text>
+								<uni-number-box class="step" :min="1" :max="10" :value="item.number" :isMax="item.number>=10?true:false" :isMin="item.number===1"
+								 :index="index" @eventChange="numberChange"></uni-number-box>
+							</view>
+
 						</view>
-						<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
+
 					</view>
 				</block>
 			</view>
@@ -44,9 +51,9 @@
 				<view class="total-box">
 					<text class="price">¥{{total}}</text>
 					<text class="coupon">
-						已优惠
+						<!-- 已优惠
 						<text>74.35</text>
-						元
+						元 -->
 					</text>
 				</view>
 				<button type="primary" class="no-border confirm-btn" @click="createOrder">去结算</button>
@@ -60,12 +67,17 @@
 		mapState
 	} from 'vuex';
 	import uniNumberBox from '@/components/uni-number-box.vue'
+		import VLazyLoad from "@/components/lazyLoad";
+	
 	export default {
 		components: {
-			uniNumberBox
+			uniNumberBox,
+			VLazyLoad
 		},
 		data() {
 			return {
+					errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
 				total: 0, //总价格
 				allChecked: false, //全选状态  true|false
 				empty: false, //空白页现实  true|false
@@ -73,9 +85,9 @@
 			};
 		},
 		onLoad() {
-			
+
 		},
-		onShow(){
+		onShow() {
 			this.loadData();
 		},
 		watch: {
@@ -92,9 +104,9 @@
 		},
 		methods: {
 			//请求数据
-			async loadData() { 
+			async loadData() {
 				let res = await this.$req.ajax({
-					path: 'zdapp/cart/get_order_list', 
+					path: 'zdapp/cart/get_order_list',
 					data: {
 						users_id: this.userInfo.id,
 						page_num: "10",
@@ -145,19 +157,19 @@
 				let row = list[index];
 				let id = row.id;
 				let res = await this.$req.ajax({
-					path: 'zdapp/cart/del_order_info', 
+					path: 'zdapp/cart/del_order_info',
 					data: {
 						users_id: this.userInfo.id,
 						order_id: id
 					}
 				});
-				if (res.statusCode == 200 && res.data.code == 200) { 
+				if (res.statusCode == 200 && res.data.code == 200) {
 					this.cartList.splice(index, 1);
 					this.calcTotal();
 					uni.hideLoading();
 				}
-				
-				
+
+
 			},
 			//清空
 			clearCart() {
@@ -172,36 +184,36 @@
 			},
 			//计算总价
 			async calcTotal() {
-					let list = this.cartList;
+				let list = this.cartList;
 				if (list.length === 0) {
 					this.empty = true;
 					return;
 				}
-				let total =[];
+				let total = [];
 				let checked = true;
 				list.forEach(item => {
 					if (item.checked === true) {
-						total[total.length]=item.id ;
+						total[total.length] = item.id;
 					} else if (checked === true) {
 						checked = false;
 					}
 				})
 				this.allChecked = checked;
 				// this.total = Number(total.toFixed(2));
-				if(total.length==0){
+				if (total.length == 0) {
 					return;
 				}
 				let res = await this.$req.ajax({
-					path: 'zdapp/cart/get_order_price', 
+					path: 'zdapp/cart/get_order_price',
 					data: {
 						users_id: this.userInfo.id,
 						order_id: total.join(',')
 					}
 				});
-				if (res.statusCode == 200 && res.data.code == 200) { 
-					this.total =res.data.data.total_price
-				} 	
-			
+				if (res.statusCode == 200 && res.data.code == 200) {
+					this.total = res.data.data.total_price
+				}
+
 			},
 			//创建订单
 			createOrder() {
@@ -210,17 +222,17 @@
 				let total = [];
 				list.forEach(item => {
 					if (item.checked) {
-						total.push(item.id )
+						total.push(item.id)
 						goodsData.push({
 							attr_val: item.attr_val,
 							number: item.number
 						})
 					}
 				})
-				if(total.length==0){
+				if (total.length == 0) {
 					return
 				}
-				let order_id=total.join(',')
+				let order_id = total.join(',')
 				console.log(goodsData)
 				uni.navigateTo({
 					url: `/pages/order/createOrder?order_id=${order_id}`
@@ -232,6 +244,12 @@
 </script>
 
 <style lang='scss'>
+	.contenrow {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
 	.container {
 		padding-bottom: 134upx;
 
@@ -275,8 +293,8 @@
 		padding: 30upx 40upx;
 
 		.image-wrapper {
-			width: 230upx;
-			height: 230upx;
+			width: 150upx;
+			height: 150upx;
 			flex-shrink: 0;
 			position: relative;
 
