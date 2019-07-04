@@ -19,15 +19,18 @@
 
 		<view class="goods-section">
 			<view class="g-header b-b">
-				<image class="logo" src="http://duoduo.qibukj.cn/./Upload/Images/20190321/201903211727515.png"></image>
-				<text class="name">西城小店铺</text>
+				<!-- <image class="logo" src="http://duoduo.qibukj.cn/./Upload/Images/20190321/201903211727515.png"></image>
+				<text class="name">西城小店铺</text> -->
 			</view>
 			<!-- 商品列表 -->
-			<view class="g-item" v-for="item in shopList">
-				<image :src="item.thumb"></image>
+			<view class="g-item" v-for="(item,index) in shopList" :key="index">
+				<view class="img">
+					<v-lazyLoad mode="aspectFill" :realSrc="item.thumb" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+				</view>
+				
 				<view class="right">
 					<text class="title clamp">{{item.title}}</text>
-					<text class="spec">春装款 L</text>
+					<text class="spec"><!-- 春装款 L --></text>
 					<view class="price-box">
 						<text class="price">￥{{item.price}}</text>
 						<text class="number">x {{item.number}}</text>
@@ -114,9 +117,16 @@
 	import {
 		mapState
 	} from 'vuex';
+	import VLazyLoad from "@/components/lazyLoad";
+
 	export default {
+		components: {
+			VLazyLoad
+		},
 		data() {
 			return {
+				errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
 				shopInfo: {
 				 
 					coupon_price: 10,
@@ -305,7 +315,10 @@
 		.g-item {
 			display: flex;
 			margin: 20upx 30upx;
-
+			.img{
+				width: 140upx;
+				height: 140upx;
+			}
 			image {
 				flex-shrink: 0;
 				display: block;

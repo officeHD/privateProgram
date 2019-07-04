@@ -17,7 +17,7 @@
 			<view class="cart-list">
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}">
-						<view class="image-wrapper">
+						<view class="image-wrappers">
 							<v-lazyLoad mode="aspectFill" :realSrc="item.thumb " :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
 							<!-- <image :src="item.thumb" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
 							 @error="onImageError('cartList', index)"></image> -->
@@ -44,9 +44,9 @@
 			<view class="action-section">
 				<view class="checkbox">
 					<image :src="allChecked?'/static/selected.png':'/static/select.png'" mode="aspectFit" @click="check('all')"></image>
-					<view class="clear-btn" :class="{show: allChecked}" @click="clearCart">
+					<!-- <view class="clear-btn" :class="{show: allChecked}" @click="clearCart">
 						清空
-					</view>
+					</view> -->
 				</view>
 				<view class="total-box">
 					<text class="price">¥{{total}}</text>
@@ -76,7 +76,7 @@
 		},
 		data() {
 			return {
-					errorImage: '../static/errorImage.jpg',
+				errorImage: '../static/errorImage.jpg',
 				placeholderSrc: '../static/loading.png',
 				total: 0, //总价格
 				allChecked: false, //全选状态  true|false
@@ -116,6 +116,8 @@
 				if (res.statusCode == 200 && res.data.code == 200) {
 					this.cartList = res.data.data.list;
 					// console.log(res.data.data.list)
+				}else{
+					this.$api.msg(res.data.message)
 				}
 
 			},
@@ -167,6 +169,8 @@
 					this.cartList.splice(index, 1);
 					this.calcTotal();
 					uni.hideLoading();
+				}else{
+					this.$api.msg(res.data.message)
 				}
 
 
@@ -212,6 +216,8 @@
 				});
 				if (res.statusCode == 200 && res.data.code == 200) {
 					this.total = res.data.data.total_price
+				}else{
+					this.$api.msg(res.data.message)
 				}
 
 			},
@@ -292,13 +298,15 @@
 		position: relative;
 		padding: 30upx 40upx;
 
-		.image-wrapper {
+		.image-wrappers {
 			width: 150upx;
 			height: 150upx;
 			flex-shrink: 0;
 			position: relative;
 
 			image {
+				width: 150upx;
+				height: 150upx;
 				border-radius: 8upx;
 			}
 		}
