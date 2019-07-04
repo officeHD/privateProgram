@@ -52,11 +52,11 @@
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="c-row b-b mt20" @click="coupon_list.length>0?toggleSpec('Coupon'):null">
+			<view class="c-row b-b mt20" @click="coupon_list.length>0||reduce_list.length>0?toggleSpec('Coupon'):null">
 				<text class="tit">优惠券</text>
-				<text class="con t-r red" v-if="coupon_list.length > 0">{{coupData.name?coupData.name:"领取优惠券"}}</text>
+				<text class="con t-r red" v-if="coupon_list.length > 0||reduce_list.length>0">{{coupData.name?coupData.name:"领取优惠券"}}</text>
 
-				<text class="con t-r red" v-if="coupon_list.length == 0">暂无优惠券</text>
+				<text class="con t-r red" v-if="coupon_list.length == 0&&reduce_list.length==0">暂无优惠券</text>
 				<text class="yticon icon-you"></text>
 			</view>
 			<navigator url="/pages/address/address?source=1" class="c-row b-b mt20">
@@ -197,6 +197,14 @@
 				<button class="btn" @click="toggleSpec">关闭</button>
 			</view>
 			<view class="layer attr-content couponBox" v-if="toogleType == 'Coupon'">
+				<view class="titleC">优惠</view>
+				<view class="" v-if="reduce_list.length>0">
+					<text class="reduce_title">促销</text>
+					<view class="reduce_content">
+						<text class="reduce_tag">满减</text> <text v-for="item in reduce_list">满{{item.min_price}}减{{item.reduce}}</text>
+					</view>
+				</view>
+				<text class="reduce_title"  v-if="coupon_list.length>0">领券</text>
 				<view class="row" v-for="(row, index) in coupon_list" :key="index">
 					<view class="carrier">
 						<view class="left">
@@ -265,6 +273,7 @@
 				evaluation: {},
 				evaluationTotal: 0,
 				number: 1,
+				reduce_list: [],
 				shopOptionId: "",
 				addressData: {
 					id: '',
@@ -288,7 +297,8 @@
 					old_price: '',
 					thumb: '',
 					thumb_url: '',
-					is_service: ""
+					is_service: "",
+					is_collection: ""
 				},
 				goodsParam: [],
 				coupon_list: [{
@@ -323,8 +333,19 @@
 					}
 				});
 				if (coupon_list.data.code == 200) {
-					// this.coupon_list = coupon_list.data.data;
+					this.coupon_list = coupon_list.data.data;
 				}
+				const reduce = await this.$req.ajax({
+					path: 'zdapp/coupon/get_reduction_list',
+					title: '正在加载',
+					data: {
+						co_id: co_id
+					}
+				});
+				if (reduce.data.code == 200) {
+					this.reduce_list = reduce.data.data;
+				}
+
 			}
 
 			if (id) {
@@ -382,6 +403,8 @@
 				}
 
 
+
+
 				const res = await this.$req.ajax({
 					path: 'zdapp/goods/get_goods_info',
 					title: '正在加载',
@@ -391,6 +414,9 @@
 				});
 				if (res.data.code == 200) {
 					this.shopInfo = res.data.data;
+					if (res.data.data.is_collection == "1") {
+						this.favorite = true;
+					}
 					this.getGoodSPrice()
 				}
 
@@ -447,9 +473,34 @@
 			},
 			choseCoup(item) {
 				this.coupData = item;
+				this.add_users_coupon(item.id)
+			},
+			async add_users_coupon(id) {
+				// 
+				var res = await this.$req.ajax({
+					path: 'zdapp/coupon/add_users_coupon',
+					title: '正在加载',
+					data: {
+						users_id: this.userInfo.id,
+						id: id
+					}
+				});
+				if (res.data.code == 200) {
+
+					this.$api.msg(res.data.message);
+				} else {
+					this.$api.msg(res.data.message);
+				}
 			},
 			//收藏
-			async toFavorite() {
+			toFavorite() {
+				if (this.favorite) {
+					this.del_goods_collection()
+				} else {
+					this.add_goods_collection()
+				}
+			},
+			async add_goods_collection() {
 				var res = await this.$req.ajax({
 					path: 'zdapp/goods_collection/add_goods_collection',
 					title: '正在加载',
@@ -460,11 +511,28 @@
 					}
 				});
 				if (res.data.code == 200) {
-					// this.$api.msg('请填写收货人姓名');
+					this.favorite = true;
+					this.$api.msg(res.data.message);
 				} else {
-					// this.$api.msg('请填写收货人姓名');
+					this.$api.msg(res.data.message);
 				}
-				this.favorite = !this.favorite;
+			},
+			async del_goods_collection() {
+				var res = await this.$req.ajax({
+					path: 'zdapp/goods_collection/del_goods_collection',
+					title: '正在加载',
+					data: {
+						goods_id: this.shopInfo.id,
+						users_id: this.userInfo.id,
+						group_id: '2c918aee6a48c1df016a48cdc53a0002'
+					}
+				});
+				if (res.data.code == 200) {
+					this.favorite = false;
+					this.$api.msg(res.data.message);
+				} else {
+					this.$api.msg(res.data.message);
+				}
 			},
 			async getGoodSPrice() {
 				let option_id = this.specSelected.map(item => item.id);
@@ -1037,6 +1105,27 @@
 				text-align: center;
 				padding: 20upx;
 				font-size: 30upx;
+			}
+			.reduce_title{
+				font-size: 26upx;
+				color: #666666;
+			}
+			.reduce_content{
+				padding: 20upx 0;
+				font-size: 26upx;
+				color: #1E1E1E;
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+			}
+			.reduce_tag{
+				background-color: #F22929;
+				font-size: 20upx;
+				padding: 5upx 10upx;
+				border-radius: 5upx;
+				color: #fff;
+				margin-right: 10upx;
+				
 			}
 
 			&.couponBox {

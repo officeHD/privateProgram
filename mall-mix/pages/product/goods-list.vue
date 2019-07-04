@@ -12,7 +12,9 @@
 		<view class="goods-list">
 			<view class="product-list">
 				<view class="product" v-for="(goods,index) in productList" :key="index" @tap="toGoods(goods)">
-					<image mode="widthFix" :src="goods.thumb||defaultImg" @error="imageError(index)"></image>
+					<view class="pimg">
+						<v-lazyLoad mode="widthFix" :realSrc="goods.thumb " :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+					</view>
 					<view class="name">{{goods.title}}</view>
 					<view class="info">
 						<view class="price">{{goods.price}}</view>
@@ -24,7 +26,7 @@
 		</view>
 		<view v-if="productList.length<1" class="empty">
 			<image src="/static/emptyCart.jpg" mode="aspectFit"></image>
-			<view  class="empty-tips">
+			<view class="empty-tips">
 				暂无该类商品
 			</view>
 
@@ -33,22 +35,35 @@
 </template>
 
 <script>
+	import VLazyLoad from "@/components/lazyLoad";
+
 	export default {
+		components: {
+			VLazyLoad
+		},
+
 		data() {
 			return {
 				page: 1,
 				total: 0,
-				defaultImg: '../../static/errorImage.jpg',
+				errorImage: '../static/errorImage.jpg',
+				placeholderSrc: '../static/loading.png',
 				productList: [],
 				loadingText: "",
+				categoryid: "",
+				keywords: "",
 				headerTop: "0px",
 				headerPosition: "fixed",
 				orderby: "sheng"
 			};
 		},
 		onLoad: function(option) { //option为object类型，会序列化上个页面传递的参数
-			console.log(option.cid); //打印出上个页面传递的参数。
-			this.keywords = option.name;
+			console.log(option.id); //打印出上个页面传递的参数。
+
+			if (option.id) {
+				this.categoryid = option.id;
+			}
+
 			uni.setNavigationBarTitle({
 				title: option.name
 			});
@@ -106,7 +121,7 @@
 					data: {
 						group_id: '2c918aee6a48c1df016a48cdc53a0002',
 						keywords: this.keywords,
-						categoryid: '',
+						categoryid: this.categoryid,
 						page: this.page,
 						page_num: '10'
 					}
@@ -280,50 +295,72 @@
 
 		.product-list {
 			width: 100%;
-			padding: 0 4% 3vw 4%;
+			padding: 20upx 30upx 3vw 30upx;
 			display: flex;
-			justify-content: space-between;
+			justify-content: space-around;
 			flex-wrap: wrap;
 
+			&::after {
+				content: "";
+				 width: 46%;
+				 
+			}
+
 			.product {
-				width: 48%;
+				width: 46%;
 				border-radius: 20upx;
 				background-color: #fff;
 				margin: 0 0 15upx 0;
 				box-shadow: 0upx 5upx 25upx rgba(0, 0, 0, 0.1);
 
-				image {
+				.pimg {
 					width: 100%;
-					border-radius: 20upx 20upx 0 0;
+					height: 340upx;
+
+					image {
+						width: 100%;
+
+						height: 340upx;
+						border-radius: 20upx 20upx 0 0;
+					}
+
 				}
 
+
+
 				.name {
-					width: 92%;
-					padding: 10upx 4%;
+					width: 100%;
+					padding: 16upx 24upx;
 					display: -webkit-box;
 					-webkit-box-orient: vertical;
 					-webkit-line-clamp: 2;
 					text-align: justify;
 					overflow: hidden;
-					font-size: 30upx;
+					font-size: 26upx;
 				}
 
 				.info {
 					display: flex;
 					justify-content: space-between;
 					align-items: flex-end;
-					width: 92%;
-					padding: 10upx 4% 10upx 4%;
+					width: 100%;
+					padding: 10upx 24upx 23upx;
+					font-size: 18upx;
+					color: #e65339;
 
 					.price {
 						color: #e65339;
-						font-size: 30upx;
+						font-size: 32upx;
 						font-weight: 600;
 					}
 
 					.slogan {
 						color: #807c87;
 						font-size: 24upx;
+						width: 56upx;
+						height: 44upx;
+						border-radius: 10upx;
+						overflow: hidden;
 					}
 				}
 			}

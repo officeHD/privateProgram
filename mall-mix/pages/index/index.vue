@@ -39,7 +39,7 @@
 		<view class="category-list">
 			<view class="category" v-for="(row, index) in categoryList" :key="index" @tap="toCategory(row)">
 				<view class="img">
-					<image :src="row.img"></image>
+					<v-lazyLoad mode="aspectFill" :realSrc="row.thumb" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
 				</view>
 				<view class="text">{{ row.name }}</view>
 			</view>
@@ -48,25 +48,13 @@
 		<!-- <view class="banner"><image src="../../static/img/banner.jpg"></image></view> -->
 		<!-- 活动区 -->
 		<view class="promotion">
-			<view class="list">
+			<view class="promotion_list">
 				<view class="column" v-for="(row, index) in Promotion" @tap="toPromotion(row)" :key="index">
-					<view class="top">
-						<view class="title">{{ row.title }}</view>
-						<view class="countdown" v-if="row.countdown">
-							<view>{{ row.countdown.h }}</view>
-							:
-							<view>{{ row.countdown.m }}</view>
-							:
-							<view>{{ row.countdown.s }}</view>
-						</view>
-					</view>
-					<view class="left">
-						<view class="ad">{{ row.ad }}</view>
-						<!-- <view class="into">点击进入</view> -->
-					</view>
-					<view class="right">
-						<image :src="row.img"></image>
-					</view>
+					<!-- <view class="top">
+						<view class="title">{{ row.co_name }}</view> 
+					</view> -->
+
+					<v-lazyLoad mode="aspectFill" :realSrc="row.co_logo" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
 				</view>
 			</view>
 		</view>
@@ -83,8 +71,10 @@
 
 						<view class="name">{{ product.title }}</view>
 						<view class="info">
-							<view>¥<text  class="price">{{ product.price }}</text></view>
-							<view class="slogan"><v-lazyLoad :realSrc="product.co_logo"  :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad></view>
+							<view>¥<text class="price">{{ product.price }}</text></view>
+							<view class="slogan">
+								<v-lazyLoad :realSrc="product.co_logo" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -95,9 +85,9 @@
 						</view>
 						<view class="name">{{ product.title }}</view>
 						<view class="info">
-							<view>¥<text  class="price">{{ product.price }}</text></view>
+							<view>¥<text class="price">{{ product.price }}</text></view>
 							<view class="slogan">
-								<v-lazyLoad :realSrc="product.co_logo"  :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
+								<v-lazyLoad :realSrc="product.co_logo" :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
 							</view>
 						</view>
 					</view>
@@ -233,6 +223,9 @@
 			this.Timer();
 			//加载活动专区
 			this.loadPromotion();
+			this.loadCategoryList();
+
+
 		},
 
 		methods: {
@@ -273,53 +266,33 @@
 				}
 			},
 			//加载Promotion 并设定倒计时,,实际应用中应该是ajax加载此数据。
-			loadPromotion() {
-				let cutTime = new Date();
-				let yy = cutTime.getFullYear(),
-					mm = cutTime.getMonth() + 1,
-					dd = cutTime.getDate();
-				let tmpcountdown = yy + '/' + mm + '/' + dd + ' 23:59:59';
-				let tmpPromotion = [{
-						title: '限时抢购',
-						ad: '每天23点上线',
-						img: '../../static/temp/cate21.jpg',
-						countdown: tmpcountdown
-					},
-					{
-						title: '整点秒杀',
-						ad: '整天秒杀专区',
-						img: '../../static/temp/cate21.jpg',
-						countdown: false
-					}
+			async loadPromotion() {
+				const res = await this.$req.ajax({
+					path: 'zdapp/company_info/get_co_activity_list',
+					title: '正在加载',
+					data: {
+						group_id: '2c918aee6a48c1df016a48cdc53a0002',
 
-					//countdown为目标时间，程序会获取当前时间倒数
-				];
-				//检查倒计时
-				for (let i = 0; i < tmpPromotion.length; i++) {
-					let row = tmpPromotion[i];
-					if (row.countdown) {
-						let h = '00',
-							m = '00',
-							s = '00';
-						let currentTime = new Date();
-						let cutoffTime = new Date(tmpcountdown);
-						if (!(currentTime >= cutoffTime)) {
-							let countTime = parseInt((cutoffTime.getTime() - currentTime.getTime()) / 1000);
-							h = parseInt(countTime / 3600);
-							m = parseInt((countTime % 3600) / 60);
-							s = countTime % 60;
-							h = h < 10 ? '0' + h : h;
-							m = m < 10 ? '0' + m : m;
-							s = s < 10 ? '0' + s : s;
-						}
-						tmpPromotion[i].countdown = {
-							h: h,
-							m: m,
-							s: s
-						};
 					}
+				});
+				if (res.data.code == 200) {
+					console.log(res)
+					this.Promotion = res.data.data
 				}
-				this.Promotion = tmpPromotion;
+				// 
+			},
+			async loadCategoryList() {
+				const res = await this.$req.ajax({
+					path: 'zdapp/goods/get_category_list',
+					title: '正在加载',
+					data: {
+						parentid: '2c918aee6a48c1df016a48cdc53a0002',
+
+					}
+				});
+				if (res.data.code == 200) {
+					this.categoryList = res.data.data
+				}
 			},
 			//定时器
 			Timer() {
@@ -371,7 +344,7 @@
 			//分类跳转
 			toCategory(e) {
 				//uni.showToast({title: e.name,icon:"none"});
-				let url = '/pages/product/goods-list?cid=' + e.id + '&name=' + e.name;
+				let url = '/pages/product/goods-list?id=' + e.id + '&name=' + e.name;
 				if (!this.hasLogin) {
 					url = '/pages/public/login';
 				}
@@ -380,10 +353,19 @@
 				});
 			},
 			//推荐商品跳转
-			toPromotion(e) {
-				uni.showToast({
-					title: e.title,
-					icon: 'none'
+			toPromotion(item) {
+
+				let id = item.id;
+				// uni.showToast({
+				// 	title: '商品' + item.id,
+				// 	icon: 'none'
+				// });
+				let url = `/pages/business/business?id=${id}`;
+				if (!this.hasLogin) {
+					url = '/pages/public/login';
+				}
+				uni.navigateTo({
+					url: url
 				});
 			},
 			//商品跳转
@@ -647,13 +629,16 @@
 				justify-content: center;
 
 				image {
+					border-radius: 50%;
+					overflow: hidden;
 					width: 15vw;
 					height: 15vw;
+					background-color: transparent;
 				}
 			}
 
 			.text {
-				margin-top: -10upx;
+				margin-top: 10upx;
 				width: 100%;
 				display: flex;
 				justify-content: center;
@@ -688,15 +673,16 @@
 			padding-left: 30upx;
 		}
 
-		.list {
+		.promotion_list {
 			width: 100%;
 			display: flex;
-			justify-content: space-between;
+			justify-content: space-around;
 			padding: 0 20upx;
-
+			
 			.column {
-				flex: 1;
-				padding: 15upx 3%;
+				height: 218upx;
+				width: 218upx;
+				padding: 0;
 				background-color: #ebf9f9;
 				border-radius: 10upx;
 				overflow: hidden;
@@ -705,69 +691,11 @@
 				flex-wrap: wrap;
 				margin: 0 15upx;
 
-				.top {
-					width: 100%;
-					height: 40upx;
-					display: flex;
-					align-items: center;
-					margin-bottom: 5upx;
-
-					.title {
-						font-size: 30upx;
-					}
-
-					.countdown {
-						margin-left: 20upx;
-						display: flex;
-						height: 40upx;
-						display: flex;
-						align-items: center;
-						font-size: 20upx;
-
-						view {
-							height: 30upx;
-							background-color: #f06c7a;
-							display: flex;
-							justify-content: center;
-							align-items: center;
-							color: #fff;
-							border-radius: 4upx;
-							margin: 0 4upx;
-							padding: 0 2upx;
-						}
-					}
+				image {
+					width: 218upx;
+					height: 218upx;
 				}
 
-				.left {
-					display: flex;
-					flex-wrap: wrap;
-					align-content: space-between;
-
-					.ad {
-						margin-top: 5upx;
-						width: 100%;
-						font-size: 22upx;
-						color: #acb0b0;
-					}
-
-					.into {
-						width: 100%;
-						font-size: 24upx;
-						color: #aaa;
-						margin-bottom: 5upx;
-					}
-				}
-
-				.right {
-					width: 100%;
-					height: 18.86vw;
-					text-align: center;
-
-					image {
-						width: 18.86vw;
-						height: 18.86vw;
-					}
-				}
 			}
 		}
 	}
@@ -818,18 +746,19 @@
 
 				.pimg {
 					width: 100%;
-					 
+
 					height: 340upx;
+
 					image {
 						width: 100%;
-						 
-						 height: 340upx;
+
+						height: 340upx;
 						border-radius: 20upx 20upx 0 0;
 					}
-				 
+
 				}
 
-				
+
 
 				.name {
 					width: 100%;
@@ -850,6 +779,7 @@
 					padding: 10upx 24upx 23upx;
 					font-size: 18upx;
 					color: #e65339;
+
 					.price {
 						color: #e65339;
 						font-size: 32upx;

@@ -63,7 +63,7 @@
 		}
 
 		view {
-			background-color: #eee;
+			// background-color: #eee;
 			position: absolute;
 			z-index: 2;
 			top: 0;
