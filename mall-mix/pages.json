@@ -22,7 +22,16 @@
 					}
 				}
 			}
-		}, 
+		},
+		{
+			"path": "pages/product/search",
+			"style": {
+				"navigationBarTitleText": "搜索" ,
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": 50
+			}
+		},
+
 		{
 			"path": "pages/product/return",
 			"style": {
@@ -35,7 +44,7 @@
 				"navigationBarTitleText": "填写物流信息"
 			}
 		},
-		
+
 		{
 			"path": "pages/set/set",
 			"style": {

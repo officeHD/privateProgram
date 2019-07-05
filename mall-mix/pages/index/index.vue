@@ -333,6 +333,12 @@
 				// uni.showToast({
 				// 	title: '建议跳转到新页面做搜索功能'
 				// });
+				
+				
+				
+				uni.navigateTo({
+					url: "/pages/product/search"
+				});
 			},
 			//轮播图跳转
 			toSwiper(e) {

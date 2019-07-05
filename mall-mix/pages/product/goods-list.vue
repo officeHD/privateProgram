@@ -36,12 +36,16 @@
 
 <script>
 	import VLazyLoad from "@/components/lazyLoad";
-
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		components: {
 			VLazyLoad
 		},
-
+		computed: {
+			...mapState(['hasLogin'])
+		},
 		data() {
 			return {
 				page: 1,
@@ -145,7 +149,7 @@
 				this.productList[index].thumb = this.defaultImg;
 			},
 			//商品跳转
-			toGoods(e) {
+			toGoods(item) {
 				let id = item.id;
 
 				let url = `/pages/product/product?id=1&co_id=${item.co_id}`;
@@ -302,8 +306,8 @@
 
 			&::after {
 				content: "";
-				 width: 46%;
-				 
+				width: 46%;
+
 			}
 
 			.product {
