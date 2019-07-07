@@ -1,9 +1,9 @@
 {
   "schema":"js",
-  "debug":true,
+  "debug":false,
   "loglevel":"info",
   "logfiler":"",
-  "showerror":true,
+  "showerror":false,
   "isPortrait":true,
   "jsVersion":2,
   "debugIp":"127.0.0.1",
