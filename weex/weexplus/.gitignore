@@ -1,5 +1,4 @@
 node_modules/*
-platforms/*
 platforms/ios/weexplus/app/*
 !platforms/ios/weexplus/app/weexplus.json
 platforms/android/weexplus/app/src/main/assets/app/*
