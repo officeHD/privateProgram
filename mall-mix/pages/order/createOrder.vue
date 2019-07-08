@@ -70,7 +70,7 @@
 			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">运费</text>
-				<text class="cell-tip">{{shopInfo.total_postage}}</text>
+				<text class="cell-tip">￥{{shopInfo.total_postage}}</text>
 			</view>
 			<view class="yt-list-cell desc-cell">
 				<text class="cell-tit clamp">备注</text>

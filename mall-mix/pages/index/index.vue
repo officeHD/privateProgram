@@ -10,8 +10,8 @@
 				{{ city }}
 			</view> -->
 			<!-- 搜索框 -->
-			<view class="input-box">
-				<input placeholder="默认关键字" placeholder-style="color:#c0c0c0;" @tap="toSearch()" />
+			<view class="input-box" @tap="toSearch()">
+				<view class="input" placeholder="" placeholder-style="color:#c0c0c0;" >默认关键字</view> 
 				<view class="icon search"></view>
 			</view>
 			<!-- 右侧图标按钮 -->
@@ -31,7 +31,7 @@
 					</swiper-item>
 				</swiper>
 				<view class="indicator">
-					<view class="dots" v-for="(swiper, index) in swiperList" :class="[currentSwiper >= index ? 'on' : '']" :key="index"></view>
+					<view class="dots" v-for="(swiper, index) in swiperList" :class="[currentSwiper == index ? 'on' : '']" :key="index"></view>
 				</view>
 			</view>
 		</view>
@@ -514,6 +514,7 @@
 			height: 60upx;
 			background-color: #f5f5f5;
 			border-radius: 30upx;
+			
 			position: relative;
 			display: flex;
 			align-items: center;
@@ -530,9 +531,10 @@
 				color: #c0c0c0;
 			}
 
-			input {
+			.input {
 				padding-left: 28upx;
 				height: 28upx;
+				line-height: 28upx;
 				font-size: 28upx;
 			}
 		}
@@ -597,9 +599,9 @@
 				bottom: 20upx;
 				left: 20upx;
 				background-color: rgba(255, 255, 255, 0.4);
-				width: 150upx;
-				height: 5upx;
-				border-radius: 3upx;
+				width: 100upx;
+				height: 10upx;
+				border-radius: 5upx;
 				overflow: hidden;
 				display: flex;
 
@@ -607,7 +609,7 @@
 					width: 100%;
 
 					&.on {
-						background-color: rgba(255, 255, 255, 1);
+						background-color: #4C9FE0;
 					}
 				}
 			}

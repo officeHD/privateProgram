@@ -588,7 +588,6 @@
 						number: this.number
 					}
 				});
-				console.log(res);
 				if (res.data.code == 200) {
 					this.$api.msg('已添加');
 				} else {

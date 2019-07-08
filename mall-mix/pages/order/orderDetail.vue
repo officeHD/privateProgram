@@ -75,7 +75,7 @@
 
 				<view class="yt-list-cell ">
 					<text class="cell-tit clamp">运费</text>
-					<text class="cell-tip">{{total_postage}}</text>
+					<text class="cell-tip">￥{{total_postage}}</text>
 				</view>
 
 

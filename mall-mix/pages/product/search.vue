@@ -2,16 +2,16 @@
 	<view class="content">
 		<view class="search-box">
 			<!-- mSearch组件 如果使用原样式，删除组件元素-->
-			<mSearch class="mSearch-input-box" :mode="2" button="inside" :placeholder="defaultKeyword" @search="doSearch(false)"
-			 @input="inputChange" @confirm="doSearch(false)" v-model="keyword"></mSearch>
+			<!-- <mSearch class="mSearch-input-box" :mode="2" button="inside" :placeholder="defaultKeyword" @search="doSearch(false)"
+			 @input="inputChange" @confirm="doSearch(false)" v-model="keyword"></mSearch> -->
 			<!-- 原样式 如果使用原样式，恢复下方注销代码 -->
-			<!-- 			
+						
 			<view class="input-box">
-				<input type="text" :placeholder="defaultKeyword" @input="inputChange" v-model="keyword" @confirm="doSearch(false)"
+				<input type="text" :focus="true" :placeholder="defaultKeyword" @input="inputChange" v-model="keyword" @confirm="doSearch(false)"
 				 placeholder-class="placeholder-class" confirm-type="search">
 			</view>
 			<view class="search-btn" @tap="doSearch(false)">搜索</view> 
-			-->
+			
 			<!-- 原样式 end -->
 		</view>
 		<view class="search-keyword" @touchstart="blur">
