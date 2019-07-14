@@ -10,7 +10,7 @@ module.exports = new Router({
   routes: [
     {
       path: '/',
-     redirect:'/index.js'
+      redirect:'/index.js'
     },
     {
       path: '/index.js',

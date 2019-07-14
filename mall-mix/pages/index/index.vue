@@ -771,6 +771,7 @@
 				.name {
 					width: 100%;
 					padding: 16upx 24upx;
+					height: 60upx;
 					display: -webkit-box;
 					-webkit-box-orient: vertical;
 					-webkit-line-clamp: 2;

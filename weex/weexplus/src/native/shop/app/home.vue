@@ -3,7 +3,7 @@
   <head :back="false" bgcolor="#303030" @letfClick="letfClick" @rightClick="rightClick">
     <text class="leftIcon iconfont" slot="left">&#xe64a;</text>
     <text class="leftIcon iconfont" slot="right">&#xe600;</text>
-  </head>
+  </head> 
   <scroller class="scroller">
     <slider class="slider" interval="3000" auto-play="false">
       <div class="frame" v-for="(img,index) in imageList" :key="index">
@@ -17,10 +17,10 @@
       </div>
     </div>
     <div class="tabSection">
-      <div class="tabItem" v-for="(item,index) in tabSection" :key="index">
-        <image class="tabImg" :src="item.img" />
-        <text class="tips">{{item.title}}</text>
-      </div>
+      <div class="tabItem"  >
+        <image class="tabImg" src="root:img/" />
+        <text class="tips">胜多负少的方式</text>
+      </div> 
     </div>
     <div class="subSection">
       <div class="leftSub"></div>
@@ -48,13 +48,13 @@
               </view>
             </view>
             <view class="user">
-				<image class="avator" src="root:img/user.jpg" />
-				<view class="userInfo">
-					<text class="userName">LI YAN</text>
-					<text class="c666">Heifei High-Tech Zone </text>
-					<text class="c666">18 Minutes ago </text>
-				</view>
-			</view>
+			          <image class="avator" src="root:img/user.jpg" />
+                <view class="userInfo">
+                  <text class="userName">LI YAN</text>
+                  <text class="c666">Heifei High-Tech Zone </text>
+                  <text class="c666">18 Minutes ago </text>
+                </view>
+            </view>
           </view>
         </div>
       </div>
@@ -330,30 +330,30 @@ export default {
 .shopType {
   color: red;
 }
-.shopIcon{
-	font-size: 32px;
-	margin-left: 10px;
+.shopIcon {
+  font-size: 32px;
+  margin-left: 10px;
 }
-.user{
-	flex-direction: row;
- margin-top: 15px;
+.user {
+  flex-direction: row;
+  margin-top: 15px;
 }
-.avator{
-	width: 40px;
-	height: 40px;
-	border-radius: 40px;
-	margin-top: 15px;
+.avator {
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  margin-top: 15px;
 }
-.userInfo{
-	flex: 1;
-	padding-left: 15px;
+.userInfo {
+  flex: 1;
+  padding-left: 15px;
 }
-.userName{
-	font-size: 32px;
-	color: #333;
+.userName {
+  font-size: 32px;
+  color: #333;
 }
-.c666{
-	color: #666;
-	margin-top: 5px;
+.c666 {
+  color: #666;
+  margin-top: 5px;
 }
 </style>

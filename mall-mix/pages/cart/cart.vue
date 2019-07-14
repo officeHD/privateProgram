@@ -17,15 +17,15 @@
 			<view class="cart-list">
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}">
-						<view class="image-wrappers">
+						<view class="image-wrappers" @click="check('item', index)">
 							<v-lazyLoad mode="aspectFill" :realSrc="item.thumb " :errorImage="errorImage" :placeholdSrc="placeholderSrc"></v-lazyLoad>
 							<!-- <image :src="item.thumb" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
 							 @error="onImageError('cartList', index)"></image> -->
-							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.checked}" @click="check('item', index)"></view>
+							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.checked}" ></view>
 						</view>
 						<view class="item-right">
 							<view class="contenrow">
-								<text class="clamp title">{{item.title}}</text>
+								<text>{{item.title}}</text>
 								<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
 							</view>
 							<text class="attr">{{item.attr_val}}</text>
@@ -67,8 +67,8 @@
 		mapState
 	} from 'vuex';
 	import uniNumberBox from '@/components/uni-number-box.vue'
-		import VLazyLoad from "@/components/lazyLoad";
-	
+	import VLazyLoad from "@/components/lazyLoad";
+
 	export default {
 		components: {
 			uniNumberBox,
@@ -116,7 +116,7 @@
 				if (res.statusCode == 200 && res.data.code == 200) {
 					this.cartList = res.data.data.list;
 					// console.log(res.data.data.list)
-				}else{
+				} else {
 					this.$api.msg(res.data.message)
 				}
 
@@ -169,7 +169,7 @@
 					this.cartList.splice(index, 1);
 					this.calcTotal();
 					uni.hideLoading();
-				}else{
+				} else {
 					this.$api.msg(res.data.message)
 				}
 
@@ -205,6 +205,7 @@
 				this.allChecked = checked;
 				// this.total = Number(total.toFixed(2));
 				if (total.length == 0) {
+					this.total=0;
 					return;
 				}
 				let res = await this.$req.ajax({
@@ -216,7 +217,7 @@
 				});
 				if (res.statusCode == 200 && res.data.code == 200) {
 					this.total = res.data.data.total_price
-				}else{
+				} else {
 					this.$api.msg(res.data.message)
 				}
 
@@ -367,18 +368,18 @@
 		margin-bottom: 100upx;
 		/* #endif */
 		position: fixed;
-		left: 30upx;
-		bottom: 30upx;
+		left: 0;
+		bottom: 0;
 		z-index: 95;
 		display: flex;
 		align-items: center;
-		width: 690upx;
+		width: 750upx;
 		height: 100upx;
 		padding: 0 30upx;
 		background: rgba(255, 255, 255, .9);
-		box-shadow: 0 0 20upx 0 rgba(0, 0, 0, .5);
-		border-radius: 16upx;
-
+		/* box-shadow: 0 0 20upx 0 rgba(0, 0, 0, .5); */
+		/* border-radius: 16upx; */
+		border-top: 1upx solid #e6e6e6;
 		.checkbox {
 			height: 52upx;
 			position: relative;

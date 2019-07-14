@@ -1,11 +1,21 @@
 <template>
 <div class="wrapper">
-  <head :back="false" title="app入口"></head>
+  <head :back="false" title="指点商户版"  ></head>
+  <div class="tabnav">
+    <text class="tabText">
+        阿萨德
+    </text>
+  </div>
   <div class="layout">
+
     <text class="text" @click="gonext('root:/shop/app.js')">国外商城</text>
     <text class="text" @click="gonext">指点APp</text>
     <text class="text" @click="gonext">指点商户版</text>
+    <text class="text height0" @click="gonext"></text>
+    <text class="text height0" @click="gonext"></text>
+    <text class="text height0" @click="gonext"></text>
   </div>
+  <text class="text" @click="gonext">指点商户版</text>
 </div>
 </template>
 <script>
@@ -20,8 +30,7 @@ export default {
   methods: {
     onLoad(p) {},
     gonext(url) {
-      //                this.push('test.js',{name:"ssss"})
-      this.log("jdksdjsk", "error");
+      //                this.push('test.js',{name:"ssss"}) 
       navigator.push(url);
     }
   },
@@ -30,13 +39,17 @@ export default {
 </script>
 <style scoped>
 .wrapper{
-    display: flex;
 }
 .layout {
   align-items: center;
   background-color: #ffffff;
-  justify-content: center;
+  justify-content: space-around;
   flex: 1;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.height0{
+  height: 0;
 }
 .img {
   width: 200px;
@@ -49,5 +62,12 @@ export default {
   font-size: 70px;
   font-weight: bold;
   margin-bottom: 50px;
+}
+.tabnav{
+  color: #fff000;
+}
+.tabText{
+  font-size: 60px;
+  font-weight: 600;
 }
 </style>
